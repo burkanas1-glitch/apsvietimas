@@ -152,6 +152,34 @@
  
   .villages-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
  
+  .override-bar { display: flex; gap: 8px; margin-bottom: 10px; }
+ 
+  .btn-override-on {
+    flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; transition: all 0.15s;
+    background: rgba(251,191,36,0.1); color: var(--yellow);
+    border: 1px solid rgba(251,191,36,0.3);
+  }
+  .btn-override-on:hover  { background: rgba(251,191,36,0.2); }
+  .btn-override-on.active {
+    background: rgba(251,191,36,0.25); border-color: var(--yellow);
+    box-shadow: 0 0 8px rgba(251,191,36,0.3);
+  }
+ 
+  .btn-override-off {
+    flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; transition: all 0.15s;
+    background: rgba(78,168,222,0.1); color: var(--blue);
+    border: 1px solid rgba(78,168,222,0.3);
+  }
+  .btn-override-off:hover  { background: rgba(78,168,222,0.2); }
+  .btn-override-off.active {
+    background: rgba(78,168,222,0.25); border-color: var(--blue);
+    box-shadow: 0 0 8px rgba(78,168,222,0.3);
+  }
+ 
   .btn-small {
     flex: 1; padding: 7px 0; border-radius: 7px;
     border: 1px solid var(--border); font-family: var(--mono);
@@ -323,6 +351,10 @@
       <button class="btn-small btn-all-off" onclick="setAll(false)">■ Visi IŠJ</button>
       <button class="btn-small btn-sched"   onclick="setSchedule()">⏱ Pagal grafiką</button>
     </div>
+    <div class="override-bar">
+      <button class="btn-override-on"  id="btnOverrideOn"  onclick="setOverride(true)">⚡ Rankinis režimas</button>
+      <button class="btn-override-off" id="btnOverrideOff" onclick="setOverride(false)">⏱ Grąžinti į grafiką</button>
+    </div>
     <div class="status-bar">
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:var(--muted)"></div>Nežinoma</div>
@@ -364,6 +396,7 @@ const WRITE_KEY  = "JFE3B81LD0HKM1FX";
 const READ_KEY   = "NIPNDS28ZXRZFO9S";
  
 let states     = new Array(15).fill(true);
+let overrideMode = false; // true = rankinis, false = grafiko
 let nodeStatus = new Array(15).fill(null); // null|'pending'|'ok'|'err'
  
 // ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
@@ -452,6 +485,15 @@ function renderBadges() {
   });
 }
  
+// ── OVERRIDE ─────────────────────────────────────────────────────────────────
+ 
+function setOverride(val) {
+  overrideMode = val;
+  document.getElementById('btnOverrideOn').classList.toggle('active', val);
+  document.getElementById('btnOverrideOff').classList.toggle('active', !val);
+  updateJSON();
+}
+ 
 // ── JSON ──────────────────────────────────────────────────────────────────────
  
 function buildPayload() {
@@ -465,6 +507,7 @@ function buildPayload() {
       off2: p2 ? document.getElementById('off2').value : null,
     },
     villages: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
+    override: overrideMode,
     ts: Math.floor(Date.now() / 1000)
   };
 }
@@ -581,6 +624,7 @@ const now = () => new Date().toLocaleTimeString('lt-LT');
  
 // Init
 buildVillages();
+setOverride(false);
 updateJSON();
 </script>
 </body>
