@@ -315,30 +315,30 @@
         <div class="period-toggle">
           <span class="period-label">I periodas</span>
           <label class="toggle">
-            <input type="checkbox" id="p1en" checked onchange="updateJSON()">
+            <input type="checkbox" id="p1en" checked onchange="updateJSON(); saveSettings()">
             <div class="toggle-track"></div><div class="toggle-thumb"></div>
           </label>
         </div>
         <div class="time-row">
-          <label>ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON()">
+          <label>ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON(); saveSettings()">
         </div>
         <div class="time-row">
-          <label>IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON()">
+          <label>IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON(); saveSettings()">
         </div>
       </div>
       <div class="period-block">
         <div class="period-toggle">
           <span class="period-label">II periodas</span>
           <label class="toggle">
-            <input type="checkbox" id="p2en" onchange="updateJSON()">
+            <input type="checkbox" id="p2en" onchange="updateJSON(); saveSettings()">
             <div class="toggle-track"></div><div class="toggle-thumb"></div>
           </label>
         </div>
         <div class="time-row">
-          <label>ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON()">
+          <label>ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON(); saveSettings()">
         </div>
         <div class="time-row">
-          <label>IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON()">
+          <label>IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON(); saveSettings()">
         </div>
       </div>
     </div>
@@ -449,6 +449,7 @@ function toggleVillage(i, val) {
   document.getElementById(`vrow_${i}`).className = 'village-row ' + (val ? 'cmd-on' : '');
   renderBadges();
   updateJSON();
+  saveSettings();
 }
  
 function setAll(val) {
@@ -456,6 +457,7 @@ function setAll(val) {
   nodeStatus = new Array(15).fill(null);
   buildVillages();
   updateJSON();
+  saveSettings();
 }
  
 function setSchedule() {
@@ -492,6 +494,7 @@ function setOverride(val) {
   document.getElementById('btnOverrideOn').classList.toggle('active', val);
   document.getElementById('btnOverrideOff').classList.toggle('active', !val);
   updateJSON();
+  saveSettings();
 }
  
 // ── JSON ──────────────────────────────────────────────────────────────────────
@@ -622,9 +625,43 @@ function showToast(msg, type) {
  
 const now = () => new Date().toLocaleTimeString('lt-LT');
  
+// ── LOCAL STORAGE ────────────────────────────────────────────────────────────
+ 
+function saveSettings() {
+  const settings = {
+    p1en:  document.getElementById('p1en').checked,
+    on1:   document.getElementById('on1').value,
+    off1:  document.getElementById('off1').value,
+    p2en:  document.getElementById('p2en').checked,
+    on2:   document.getElementById('on2').value,
+    off2:  document.getElementById('off2').value,
+    states: states,
+    override: overrideMode
+  };
+  localStorage.setItem('apsvietimas', JSON.stringify(settings));
+}
+ 
+function loadSettings() {
+  const raw = localStorage.getItem('apsvietimas');
+  if (!raw) return; // Pirmas paleidimas — stock nustatymai
+ 
+  try {
+    const s = JSON.parse(raw);
+    document.getElementById('p1en').checked = s.p1en  ?? true;
+    document.getElementById('on1').value    = s.on1   ?? '22:30';
+    document.getElementById('off1').value   = s.off1  ?? '06:00';
+    document.getElementById('p2en').checked = s.p2en  ?? false;
+    document.getElementById('on2').value    = s.on2   ?? '00:00';
+    document.getElementById('off2').value   = s.off2  ?? '02:00';
+    if (Array.isArray(s.states) && s.states.length === 15) states = s.states;
+    overrideMode = s.override ?? false;
+  } catch { /* Sugadintas JSON — ignoruojame */ }
+}
+ 
 // Init
+loadSettings();
 buildVillages();
-setOverride(false);
+setOverride(overrideMode);
 updateJSON();
 </script>
 </body>
