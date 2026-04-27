@@ -11,7 +11,7 @@
 <title>Gatvių Apšvietimas — Žeimelio Seniūnija</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap');
-
+ 
   :root {
     --bg:     #0a0e1a;
     --bg2:    #111827;
@@ -28,9 +28,9 @@
     --mono:   'Share Tech Mono', monospace;
     --sans:   'Barlow', sans-serif;
   }
-
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   body {
     background: var(--bg);
     color: var(--text);
@@ -38,7 +38,7 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
+ 
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -48,41 +48,41 @@
     background-size: 40px 40px;
     pointer-events: none; z-index: 0;
   }
-
+ 
   .wrap {
     position: relative; z-index: 1;
     max-width: 680px; margin: 0 auto;
     padding: 16px 12px 48px;
   }
-
+ 
   header {
     display: flex; align-items: flex-start;
     justify-content: space-between;
     margin-bottom: 24px; padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
-
+ 
   .logo { display: flex; align-items: center; gap: 10px; }
-
+ 
   .logo-icon {
     width: 36px; height: 36px; background: var(--accent);
     border-radius: 8px; display: flex; align-items: center;
     justify-content: center; font-size: 18px;
   }
-
+ 
   .logo-text h1 {
     font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
     text-transform: uppercase; color: var(--text); line-height: 1.2;
   }
   .logo-text p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
-
+ 
   .status-pill {
     display: flex; align-items: center; gap: 6px;
     background: var(--bg3); border: 1px solid var(--border);
     border-radius: 20px; padding: 5px 10px;
     font-size: 11px; font-family: var(--mono); color: var(--muted);
   }
-
+ 
   .status-dot {
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--muted); transition: background 0.3s;
@@ -90,39 +90,39 @@
   .status-dot.ok      { background: var(--green);  box-shadow: 0 0 6px var(--green); }
   .status-dot.err     { background: var(--red);    box-shadow: 0 0 6px var(--red); }
   .status-dot.pending { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-
+ 
   .section-title {
     font-size: 10px; font-family: var(--mono); color: var(--accent);
     letter-spacing: 0.15em; text-transform: uppercase;
     margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
   }
   .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
+ 
   .card {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: 12px; padding: 16px; margin-bottom: 16px;
   }
-
+ 
   .schedule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
+ 
   .period-block {
     background: var(--bg3); border: 1px solid var(--border);
     border-radius: 8px; padding: 12px;
   }
-
+ 
   .period-label {
     font-size: 10px; font-family: var(--mono); color: var(--muted);
     text-transform: uppercase; letter-spacing: 0.1em;
   }
-
+ 
   .period-toggle {
     display: flex; align-items: center;
     justify-content: space-between; margin-bottom: 10px;
   }
-
+ 
   .time-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
   .time-row label { font-size: 11px; color: var(--muted); width: 28px; flex-shrink: 0; }
-
+ 
   .time-row input[type="time"] {
     flex: 1; background: var(--bg); border: 1px solid var(--border);
     border-radius: 6px; color: var(--accent); font-family: var(--mono);
@@ -130,7 +130,7 @@
     width: 100%; -webkit-appearance: none; color-scheme: dark;
   }
   .time-row input[type="time"]:focus { border-color: var(--accent); }
-
+ 
   .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
   .toggle input { display: none; }
   .toggle-track {
@@ -149,9 +149,9 @@
   .toggle input:checked ~ .toggle-thumb {
     left: 23px; background: var(--green); box-shadow: 0 0 8px var(--green);
   }
-
+ 
   .villages-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
-
+ 
   .btn-small {
     flex: 1; padding: 7px 0; border-radius: 7px;
     border: 1px solid var(--border); font-family: var(--mono);
@@ -164,19 +164,19 @@
   .btn-all-off:hover { background: rgba(242,92,92,0.2); }
   .btn-sched   { background: rgba(245,166,35,0.1); color: var(--accent); border-color: rgba(245,166,35,0.3); }
   .btn-sched:hover   { background: rgba(245,166,35,0.2); }
-
+ 
   .status-bar {
     display: flex; align-items: center;
     justify-content: space-between; margin-bottom: 12px;
   }
-
+ 
   .legend { display: flex; gap: 10px; flex-wrap: wrap; }
   .legend-item {
     display: flex; align-items: center; gap: 5px;
     font-family: var(--mono); font-size: 10px; color: var(--muted);
   }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-
+ 
   .btn-refresh {
     display: flex; align-items: center; gap: 6px;
     background: rgba(78,168,222,0.1); border: 1px solid rgba(78,168,222,0.3);
@@ -189,11 +189,11 @@
   .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
   .spin-icon { display: inline-block; }
   .btn-refresh.loading .spin-icon { animation: spin 0.7s linear infinite; }
-
+ 
   @keyframes spin { to { transform: rotate(360deg); } }
-
+ 
   .village-list { display: flex; flex-direction: column; gap: 6px; }
-
+ 
   .village-row {
     display: flex; align-items: center;
     background: var(--bg3); border: 1px solid var(--border);
@@ -201,11 +201,11 @@
     transition: border-color 0.2s, background 0.2s; gap: 8px;
   }
   .village-row.cmd-on { border-color: rgba(34,211,160,0.35); background: rgba(34,211,160,0.04); }
-
+ 
   .village-id   { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 20px; flex-shrink: 0; }
   .village-name { flex: 1; font-size: 14px; color: var(--text); }
   .village-addr { font-family: var(--mono); font-size: 11px; color: var(--muted); flex-shrink: 0; }
-
+ 
   .node-badge {
     width: 22px; height: 22px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
@@ -216,7 +216,7 @@
   .node-badge.s-pending { background: rgba(251,191,36,0.15);     border-color: var(--yellow); color: var(--yellow); }
   .node-badge.s-ok      { background: rgba(34,211,160,0.15);     border-color: var(--green);  color: var(--green); }
   .node-badge.s-err     { background: rgba(242,92,92,0.15);      border-color: var(--red);    color: var(--red); }
-
+ 
   .json-preview {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: 8px; padding: 12px; font-family: var(--mono);
@@ -224,7 +224,7 @@
     word-break: break-all; line-height: 1.6;
     max-height: 130px; overflow-y: auto; margin-bottom: 12px;
   }
-
+ 
   .btn-send {
     width: 100%; padding: 14px; background: var(--accent); color: #000;
     border: none; border-radius: 10px; font-family: var(--mono);
@@ -241,12 +241,12 @@
   }
   .btn-send.loading span { display: none; }
   .btn-send.loading .spinner { display: block; }
-
+ 
   .last-sync {
     text-align: center; font-family: var(--mono);
     font-size: 11px; color: var(--muted); margin-top: 8px;
   }
-
+ 
   .toast {
     position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%) translateY(80px);
@@ -265,7 +265,7 @@
 </head>
 <body>
 <div class="wrap">
-
+ 
   <header>
     <div class="logo">
       <div class="logo-icon">💡</div>
@@ -279,7 +279,7 @@
       <span id="statusText">—</span>
     </div>
   </header>
-
+ 
   <div class="section-title">Grafikas</div>
   <div class="card">
     <div class="schedule-grid">
@@ -315,7 +315,7 @@
       </div>
     </div>
   </div>
-
+ 
   <div class="section-title">Kaimai</div>
   <div class="card">
     <div class="villages-toolbar">
@@ -337,7 +337,7 @@
     </div>
     <div class="village-list" id="villageList"></div>
   </div>
-
+ 
   <div class="section-title">Siųsti</div>
   <div class="card">
     <div class="json-preview" id="jsonPreview"></div>
@@ -347,11 +347,11 @@
     </button>
     <div class="last-sync" id="lastSync">Dar nesiųsta</div>
   </div>
-
+ 
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 const VILLAGES = [
   "Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis",
@@ -362,12 +362,12 @@ const ADDR       = "ABCDEFGHIJKLMNO".split("");
 const CHANNEL_ID = "3356658";
 const WRITE_KEY  = "JFE3B81LD0HKM1FX";
 const READ_KEY   = "NIPNDS28ZXRZFO9S";
-
+ 
 let states     = new Array(15).fill(true);
 let nodeStatus = new Array(15).fill(null); // null|'pending'|'ok'|'err'
-
+ 
 // ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
-
+ 
 if ('serviceWorker' in navigator) {
   const swCode = `
     const CACHE = 'apsvietimas-v1';
@@ -384,9 +384,9 @@ if ('serviceWorker' in navigator) {
   const swUrl = URL.createObjectURL(blob);
   navigator.serviceWorker.register(swUrl).catch(() => {});
 }
-
+ 
 // ── VILLAGE LIST ──────────────────────────────────────────────────────────────
-
+ 
 function buildVillages() {
   const list = document.getElementById('villageList');
   list.innerHTML = '';
@@ -409,7 +409,7 @@ function buildVillages() {
   });
   renderBadges();
 }
-
+ 
 function toggleVillage(i, val) {
   states[i] = val;
   nodeStatus[i] = null;
@@ -417,30 +417,30 @@ function toggleVillage(i, val) {
   renderBadges();
   updateJSON();
 }
-
+ 
 function setAll(val) {
   states = new Array(15).fill(val);
   nodeStatus = new Array(15).fill(null);
   buildVillages();
   updateJSON();
 }
-
+ 
 function setSchedule() {
   states = new Array(15).fill(true);
   nodeStatus = new Array(15).fill(null);
   buildVillages();
   updateJSON();
 }
-
+ 
 // ── BADGES ────────────────────────────────────────────────────────────────────
-
+ 
 const BADGE = {
   null:    { cls: 's-unknown', icon: '·', title: 'Nežinoma' },
   pending: { cls: 's-pending', icon: '…', title: 'Laukiama' },
   ok:      { cls: 's-ok',      icon: '✓', title: 'Patvirtinta' },
   err:     { cls: 's-err',     icon: '✗', title: 'Klaida / neatsakė' },
 };
-
+ 
 function renderBadges() {
   VILLAGES.forEach((_, i) => {
     const el = document.getElementById(`nb_${i}`);
@@ -451,9 +451,9 @@ function renderBadges() {
     el.title = b.title;
   });
 }
-
+ 
 // ── JSON ──────────────────────────────────────────────────────────────────────
-
+ 
 function buildPayload() {
   const p1 = document.getElementById('p1en').checked;
   const p2 = document.getElementById('p2en').checked;
@@ -468,35 +468,35 @@ function buildPayload() {
     ts: Math.floor(Date.now() / 1000)
   };
 }
-
+ 
 function updateJSON() {
   document.getElementById('jsonPreview').textContent =
     JSON.stringify(buildPayload(), null, 2);
 }
-
+ 
 // ── SEND ──────────────────────────────────────────────────────────────────────
-
+ 
 async function sendToThingSpeak() {
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
   btn.classList.add('loading');
-
+ 
   const payload = buildPayload();
   payload.ts = Math.floor(Date.now() / 1000);
   updateJSON();
-
+ 
   nodeStatus = new Array(15).fill('pending');
   renderBadges();
   setHeader('pending', 'Siunčiama…');
-
+ 
   try {
     const res  = await fetch('https://api.thingspeak.com/update.json', {
       method: 'POST',
       body: new URLSearchParams({ api_key: WRITE_KEY, field1: JSON.stringify(payload) })
     });
     const data = await res.json();
-
-    if (data > 0) {
+ 
+    if (data && data.entry_id > 0) {
       showToast('✓ Išsiųsta sėkmingai', 'success');
       setHeader('ok', 'OK');
       document.getElementById('lastSync').textContent =
@@ -517,38 +517,38 @@ async function sendToThingSpeak() {
     btn.classList.remove('loading');
   }
 }
-
+ 
 // ── FETCH STATUS (field2) ─────────────────────────────────────────────────────
-
+ 
 async function fetchStatus() {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
   btn.classList.add('loading');
-
+ 
   try {
     const url  = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/2/last.json?api_key=${READ_KEY}`;
     const res  = await fetch(url);
     const data = await res.json();
-
+ 
     const raw = data.field2;
     if (!raw) {
       showToast('field2 tuščias — ESP32 dar nerašė', 'info');
       return;
     }
-
+ 
     const status = JSON.parse(raw);
     let ok = 0, err = 0;
-
+ 
     ADDR.forEach((addr, i) => {
       if      (status[addr] === 'OK')  { nodeStatus[i] = 'ok';  ok++; }
       else if (status[addr] === 'ERR') { nodeStatus[i] = 'err'; err++; }
       else                             { nodeStatus[i] = null; }
     });
-
+ 
     renderBadges();
     showToast(`Statusas: ${ok} OK, ${err} klaida`, ok === 15 ? 'success' : 'info');
     setHeader(err === 0 ? 'ok' : 'err', `${ok}/15`);
-
+ 
     if (status.ts) {
       document.getElementById('lastSync').textContent =
         'ESP32 atsakė: ' + new Date(status.ts * 1000).toLocaleTimeString('lt-LT');
@@ -560,14 +560,14 @@ async function fetchStatus() {
     btn.classList.remove('loading');
   }
 }
-
+ 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-
+ 
 function setHeader(state, text) {
   document.getElementById('statusDot').className = `status-dot ${state}`;
   document.getElementById('statusText').textContent = text;
 }
-
+ 
 function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -576,9 +576,9 @@ function showToast(msg, type) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
-
+ 
 const now = () => new Date().toLocaleTimeString('lt-LT');
-
+ 
 // Init
 buildVillages();
 updateJSON();
