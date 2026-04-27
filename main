@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Apšvietimas">
+<title>Gatvių Apšvietimas — Žeimelio Seniūnija</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg:     #0a0e1a;
+    --bg2:    #111827;
+    --bg3:    #1a2235;
+    --accent: #f5a623;
+    --accent2:#e8820a;
+    --green:  #22d3a0;
+    --red:    #f25c5c;
+    --yellow: #fbbf24;
+    --blue:   #4ea8de;
+    --text:   #e2e8f0;
+    --muted:  #64748b;
+    --border: #1e2d45;
+    --mono:   'Share Tech Mono', monospace;
+    --sans:   'Barlow', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(78,168,222,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(78,168,222,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 680px; margin: 0 auto;
+    padding: 16px 12px 48px;
+  }
+
+  header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo { display: flex; align-items: center; gap: 10px; }
+
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--accent);
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px;
+  }
+
+  .logo-text h1 {
+    font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--text); line-height: 1.2;
+  }
+  .logo-text p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .status-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 10px;
+    font-size: 11px; font-family: var(--mono); color: var(--muted);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--muted); transition: background 0.3s;
+  }
+  .status-dot.ok      { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+  .status-dot.err     { background: var(--red);    box-shadow: 0 0 6px var(--red); }
+  .status-dot.pending { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+
+  .section-title {
+    font-size: 10px; font-family: var(--mono); color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+
+  .schedule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .period-block {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+
+  .period-label {
+    font-size: 10px; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  .period-toggle {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 10px;
+  }
+
+  .time-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .time-row label { font-size: 11px; color: var(--muted); width: 28px; flex-shrink: 0; }
+
+  .time-row input[type="time"] {
+    flex: 1; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--accent); font-family: var(--mono);
+    font-size: 16px; padding: 6px 8px; outline: none;
+    width: 100%; -webkit-appearance: none; color-scheme: dark;
+  }
+  .time-row input[type="time"]:focus { border-color: var(--accent); }
+
+  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle input { display: none; }
+  .toggle-track {
+    position: absolute; inset: 0; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .toggle input:checked + .toggle-track {
+    background: rgba(34,211,160,0.2); border-color: var(--green);
+  }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--muted); transition: all 0.2s; pointer-events: none;
+  }
+  .toggle input:checked ~ .toggle-thumb {
+    left: 23px; background: var(--green); box-shadow: 0 0 8px var(--green);
+  }
+
+  .villages-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+
+  .btn-small {
+    flex: 1; padding: 7px 0; border-radius: 7px;
+    border: 1px solid var(--border); font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.05em; cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+  }
+  .btn-all-on  { background: rgba(34,211,160,0.1); color: var(--green);  border-color: rgba(34,211,160,0.3); }
+  .btn-all-on:hover  { background: rgba(34,211,160,0.2); }
+  .btn-all-off { background: rgba(242,92,92,0.1);  color: var(--red);    border-color: rgba(242,92,92,0.3); }
+  .btn-all-off:hover { background: rgba(242,92,92,0.2); }
+  .btn-sched   { background: rgba(245,166,35,0.1); color: var(--accent); border-color: rgba(245,166,35,0.3); }
+  .btn-sched:hover   { background: rgba(245,166,35,0.2); }
+
+  .status-bar {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; }
+  .legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .btn-refresh {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(78,168,222,0.1); border: 1px solid rgba(78,168,222,0.3);
+    color: var(--blue); border-radius: 7px; padding: 6px 12px;
+    font-family: var(--mono); font-size: 11px; cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+    letter-spacing: 0.05em; white-space: nowrap;
+  }
+  .btn-refresh:hover { background: rgba(78,168,222,0.2); }
+  .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
+  .spin-icon { display: inline-block; }
+  .btn-refresh.loading .spin-icon { animation: spin 0.7s linear infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .village-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .village-row {
+    display: flex; align-items: center;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    transition: border-color 0.2s, background 0.2s; gap: 8px;
+  }
+  .village-row.cmd-on { border-color: rgba(34,211,160,0.35); background: rgba(34,211,160,0.04); }
+
+  .village-id   { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 20px; flex-shrink: 0; }
+  .village-name { flex: 1; font-size: 14px; color: var(--text); }
+  .village-addr { font-family: var(--mono); font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+  .node-badge {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0; font-family: var(--mono);
+    border: 1px solid var(--border); background: var(--bg); transition: all 0.3s;
+  }
+  .node-badge.s-unknown { background: var(--bg);                 border-color: var(--border); color: var(--muted); }
+  .node-badge.s-pending { background: rgba(251,191,36,0.15);     border-color: var(--yellow); color: var(--yellow); }
+  .node-badge.s-ok      { background: rgba(34,211,160,0.15);     border-color: var(--green);  color: var(--green); }
+  .node-badge.s-err     { background: rgba(242,92,92,0.15);      border-color: var(--red);    color: var(--red); }
+
+  .json-preview {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; font-family: var(--mono);
+    font-size: 11px; color: var(--blue); white-space: pre-wrap;
+    word-break: break-all; line-height: 1.6;
+    max-height: 130px; overflow-y: auto; margin-bottom: 12px;
+  }
+
+  .btn-send {
+    width: 100%; padding: 14px; background: var(--accent); color: #000;
+    border: none; border-radius: 10px; font-family: var(--mono);
+    font-size: 14px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-send:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-send:active { transform: translateY(0); }
+  .btn-send:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+  .btn-send .spinner {
+    display: none; width: 16px; height: 16px;
+    border: 2px solid rgba(0,0,0,0.3); border-top-color: #000;
+    border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto;
+  }
+  .btn-send.loading span { display: none; }
+  .btn-send.loading .spinner { display: block; }
+
+  .last-sync {
+    text-align: center; font-family: var(--mono);
+    font-size: 11px; color: var(--muted); margin-top: 8px;
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 20px;
+    font-family: var(--mono); font-size: 12px; color: var(--text);
+    z-index: 100; transition: transform 0.3s ease;
+    white-space: nowrap; display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .toast.show    { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: rgba(34,211,160,0.4); color: var(--green); }
+  .toast.error   { border-color: rgba(242,92,92,0.4);  color: var(--red); }
+  .toast.info    { border-color: rgba(78,168,222,0.4); color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">💡</div>
+      <div class="logo-text">
+        <h1>Gatvių Apšvietimas</h1>
+        <p>Žeimelio seniūnija · 15 kaimų</p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">—</span>
+    </div>
+  </header>
+
+  <div class="section-title">Grafikas</div>
+  <div class="card">
+    <div class="schedule-grid">
+      <div class="period-block">
+        <div class="period-toggle">
+          <span class="period-label">I periodas</span>
+          <label class="toggle">
+            <input type="checkbox" id="p1en" checked onchange="updateJSON()">
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="time-row">
+          <label>ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON()">
+        </div>
+        <div class="time-row">
+          <label>IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON()">
+        </div>
+      </div>
+      <div class="period-block">
+        <div class="period-toggle">
+          <span class="period-label">II periodas</span>
+          <label class="toggle">
+            <input type="checkbox" id="p2en" onchange="updateJSON()">
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="time-row">
+          <label>ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON()">
+        </div>
+        <div class="time-row">
+          <label>IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Kaimai</div>
+  <div class="card">
+    <div class="villages-toolbar">
+      <button class="btn-small btn-all-on"  onclick="setAll(true)">▶ Visi ĮJ</button>
+      <button class="btn-small btn-all-off" onclick="setAll(false)">■ Visi IŠJ</button>
+      <button class="btn-small btn-sched"   onclick="setSchedule()">⏱ Pagal grafiką</button>
+    </div>
+    <div class="status-bar">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--muted)"></div>Nežinoma</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Laukiama</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>OK</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Klaida</div>
+      </div>
+      <button class="btn-refresh" id="refreshBtn" onclick="fetchStatus()">
+        <span class="spin-icon">↻</span>
+        <span>Statusas</span>
+      </button>
+    </div>
+    <div class="village-list" id="villageList"></div>
+  </div>
+
+  <div class="section-title">Siųsti</div>
+  <div class="card">
+    <div class="json-preview" id="jsonPreview"></div>
+    <button class="btn-send" id="sendBtn" onclick="sendToThingSpeak()">
+      <span>Siųsti į ThingSpeak</span>
+      <div class="spinner"></div>
+    </button>
+    <div class="last-sync" id="lastSync">Dar nesiųsta</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const VILLAGES = [
+  "Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis",
+  "Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai",
+  "Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"
+];
+const ADDR       = "ABCDEFGHIJKLMNO".split("");
+const CHANNEL_ID = "3356658";
+const WRITE_KEY  = "JFE3B81LD0HKM1FX";
+const READ_KEY   = "NIPNDS28ZXRZFO9S";
+
+let states     = new Array(15).fill(true);
+let nodeStatus = new Array(15).fill(null); // null|'pending'|'ok'|'err'
+
+// ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
+
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'apsvietimas-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// ── VILLAGE LIST ──────────────────────────────────────────────────────────────
+
+function buildVillages() {
+  const list = document.getElementById('villageList');
+  list.innerHTML = '';
+  VILLAGES.forEach((name, i) => {
+    const row = document.createElement('div');
+    row.className = 'village-row ' + (states[i] ? 'cmd-on' : '');
+    row.id = `vrow_${i}`;
+    row.innerHTML = `
+      <span class="village-id">${String(i+1).padStart(2,'0')}</span>
+      <span class="village-name">${name}</span>
+      <span class="village-addr">${ADDR[i]}</span>
+      <div class="node-badge s-unknown" id="nb_${i}" title="Nežinoma">·</div>
+      <label class="toggle">
+        <input type="checkbox" ${states[i] ? 'checked' : ''} onchange="toggleVillage(${i}, this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    `;
+    list.appendChild(row);
+  });
+  renderBadges();
+}
+
+function toggleVillage(i, val) {
+  states[i] = val;
+  nodeStatus[i] = null;
+  document.getElementById(`vrow_${i}`).className = 'village-row ' + (val ? 'cmd-on' : '');
+  renderBadges();
+  updateJSON();
+}
+
+function setAll(val) {
+  states = new Array(15).fill(val);
+  nodeStatus = new Array(15).fill(null);
+  buildVillages();
+  updateJSON();
+}
+
+function setSchedule() {
+  states = new Array(15).fill(true);
+  nodeStatus = new Array(15).fill(null);
+  buildVillages();
+  updateJSON();
+}
+
+// ── BADGES ────────────────────────────────────────────────────────────────────
+
+const BADGE = {
+  null:    { cls: 's-unknown', icon: '·', title: 'Nežinoma' },
+  pending: { cls: 's-pending', icon: '…', title: 'Laukiama' },
+  ok:      { cls: 's-ok',      icon: '✓', title: 'Patvirtinta' },
+  err:     { cls: 's-err',     icon: '✗', title: 'Klaida / neatsakė' },
+};
+
+function renderBadges() {
+  VILLAGES.forEach((_, i) => {
+    const el = document.getElementById(`nb_${i}`);
+    if (!el) return;
+    const b = BADGE[nodeStatus[i]] || BADGE[null];
+    el.className = `node-badge ${b.cls}`;
+    el.textContent = b.icon;
+    el.title = b.title;
+  });
+}
+
+// ── JSON ──────────────────────────────────────────────────────────────────────
+
+function buildPayload() {
+  const p1 = document.getElementById('p1en').checked;
+  const p2 = document.getElementById('p2en').checked;
+  return {
+    schedule: {
+      on1:  p1 ? document.getElementById('on1').value  : null,
+      off1: p1 ? document.getElementById('off1').value : null,
+      on2:  p2 ? document.getElementById('on2').value  : null,
+      off2: p2 ? document.getElementById('off2').value : null,
+    },
+    villages: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
+    ts: Math.floor(Date.now() / 1000)
+  };
+}
+
+function updateJSON() {
+  document.getElementById('jsonPreview').textContent =
+    JSON.stringify(buildPayload(), null, 2);
+}
+
+// ── SEND ──────────────────────────────────────────────────────────────────────
+
+async function sendToThingSpeak() {
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  const payload = buildPayload();
+  payload.ts = Math.floor(Date.now() / 1000);
+  updateJSON();
+
+  nodeStatus = new Array(15).fill('pending');
+  renderBadges();
+  setHeader('pending', 'Siunčiama…');
+
+  try {
+    const res  = await fetch('https://api.thingspeak.com/update.json', {
+      method: 'POST',
+      body: new URLSearchParams({ api_key: WRITE_KEY, field1: JSON.stringify(payload) })
+    });
+    const data = await res.json();
+
+    if (data > 0) {
+      showToast('✓ Išsiųsta sėkmingai', 'success');
+      setHeader('ok', 'OK');
+      document.getElementById('lastSync').textContent =
+        'Paskutinis siuntimas: ' + now();
+    } else {
+      showToast('✗ ThingSpeak atmetė komandą', 'error');
+      nodeStatus = new Array(15).fill(null);
+      renderBadges();
+      setHeader('err', 'ERR');
+    }
+  } catch {
+    showToast('✗ Tinklo klaida', 'error');
+    nodeStatus = new Array(15).fill(null);
+    renderBadges();
+    setHeader('err', 'ERR');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+// ── FETCH STATUS (field2) ─────────────────────────────────────────────────────
+
+async function fetchStatus() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  try {
+    const url  = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/2/last.json?api_key=${READ_KEY}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    const raw = data.field2;
+    if (!raw) {
+      showToast('field2 tuščias — ESP32 dar nerašė', 'info');
+      return;
+    }
+
+    const status = JSON.parse(raw);
+    let ok = 0, err = 0;
+
+    ADDR.forEach((addr, i) => {
+      if      (status[addr] === 'OK')  { nodeStatus[i] = 'ok';  ok++; }
+      else if (status[addr] === 'ERR') { nodeStatus[i] = 'err'; err++; }
+      else                             { nodeStatus[i] = null; }
+    });
+
+    renderBadges();
+    showToast(`Statusas: ${ok} OK, ${err} klaida`, ok === 15 ? 'success' : 'info');
+    setHeader(err === 0 ? 'ok' : 'err', `${ok}/15`);
+
+    if (status.ts) {
+      document.getElementById('lastSync').textContent =
+        'ESP32 atsakė: ' + new Date(status.ts * 1000).toLocaleTimeString('lt-LT');
+    }
+  } catch {
+    showToast('✗ Nepavyko nuskaityti statuso', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+
+function setHeader(state, text) {
+  document.getElementById('statusDot').className = `status-dot ${state}`;
+  document.getElementById('statusText').textContent = text;
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+const now = () => new Date().toLocaleTimeString('lt-LT');
+
+// Init
+buildVillages();
+updateJSON();
+</script>
+</body>
+</html>
