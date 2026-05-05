@@ -2,125 +2,89 @@
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apšvietimo Valdymas — Žeimelis</title>
+    <title>Žeimelio Apšvietimas V3</title>
     <style>
-        body { background: #0a0e1a; color: #e2e8f0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        body { background: #0a0e1a; color: #e2e8f0; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .card { background: #111827; border: 1px solid #1e2d45; border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; max-width: 500px; }
-        h1, h2 { color: #f5a623; text-align: center; margin-top: 0; font-size: 1.2rem; }
-        .mode-select { display: flex; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { flex: 1; padding: 12px; border: 1px solid #1e2d45; background: #1a2235; color: #64748b; cursor: pointer; border-radius: 6px; font-weight: bold; }
-        .mode-btn.active { border-color: #f5a623; color: #f5a623; background: rgba(245,166,35,0.1); }
-        .village-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #1e2d45; }
-        .btn-send { width: 100%; padding: 15px; background: #f5a623; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 15px; }
-        .status-box { background: #000; color: #4ea8de; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; margin-top: 15px; width: 100%; box-sizing: border-box; text-align: center; }
-        input[type="time"], input[type="number"] { background: #1a2235; color: #fff; border: 1px solid #334155; padding: 8px; border-radius: 4px; width: 80px; }
-        label { font-size: 0.9rem; color: #94a3b8; }
-        .override-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 10px; background: #1a2235; border-radius: 6px; }
+        h1 { color: #f5a623; text-align: center; font-size: 1.2rem; }
+        .village-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #1e2d45; }
+        .btn-send { width: 100%; padding: 15px; background: #f5a623; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .status-box { background: #000; color: #4ea8de; padding: 10px; border-radius: 5px; font-family: monospace; margin-top: 10px; text-align: center; }
+        .mode-select { display: flex; gap: 10px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; background: #1a2235; color: #64748b; border: 1px solid #1e2d45; cursor: pointer; }
+        .mode-btn.active { color: #f5a623; border-color: #f5a623; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>💡 SISTEMOS NUSTATYMAI</h1>
+    <h1>REŽIMO NUSTATYMAI</h1>
     <div class="mode-select">
-        <button id="btnSched" class="mode-btn active" onclick="setMode('schedule')">LAIKRODIS</button>
-        <button id="btnAstro" class="mode-btn" onclick="setMode('astro')">SAULĖ (ASTRO)</button>
+        <button id="btnSched" class="mode-btn active" onclick="setMode('schedule')">GRAFIKAS</button>
+        <button id="btnAstro" class="mode-btn" onclick="setMode('astro')">ASTRO</button>
     </div>
-
-    <div id="schedParams">
-        <div style="display:flex; justify-content: space-between; margin-bottom:10px;">
-            <span>I Periodas:</span>
-            <span><input type="time" id="on1" value="22:30"> iki <input type="time" id="off1" value="06:00"></span>
-        </div>
-        <div style="display:flex; justify-content: space-between;">
-            <span>II Periodas:</span>
-            <span><input type="time" id="on2" value="00:00"> iki <input type="time" id="off2" value="02:00"></span>
-        </div>
+    <div id="p-sched">
+        I: <input type="time" id="on1" value="22:30"> - <input type="time" id="off1" value="06:00"><br>
+        II: <input type="time" id="on2" value="00:00"> - <input type="time" id="off2" value="02:00">
     </div>
-
-    <div id="astroParams" style="display:none;">
-        <div style="display:flex; justify-content: space-between; margin-bottom:10px;">
-            <label>Vakaro poslinkis (min):</label> <input type="number" id="sunsetOff" value="15">
-        </div>
-        <div style="display:flex; justify-content: space-between;">
-            <label>Ryto poslinkis (min):</label> <input type="number" id="sunriseOff" value="30">
-        </div>
+    <div id="p-astro" style="display:none">
+        Vakaras offset: <input type="number" id="sSet" value="15"> min<br>
+        Rytas offset: <input type="number" id="sRise" value="30"> min
     </div>
 </div>
 
 <div class="card">
-    <h2>KAIMŲ VALDYMAS</h2>
-    <div id="villageList"></div>
-    
-    <div class="override-row">
-        <span>Rankinis režimas (Override):</span>
-        <input type="checkbox" id="overrideCheck">
+    <h1>KAIMAI</h1>
+    <div id="vList"></div>
+    <div style="margin: 15px 0;">
+        <label><input type="checkbox" id="ovr"> ĮJUNGTI RANKINĮ VALDYMĄ</label>
     </div>
-
-    <button class="btn-send" onclick="sendData()">SIŲSTI Į THINGSPEAK</button>
-    <div class="status-box" id="status">Sistemos paruošta</div>
+    <button class="btn-send" onclick="send()">SIŲSTI NUSTATYMUS</button>
+    <div class="status-box" id="stat">Paruošta</div>
 </div>
 
 <script>
     const VILLAGES = ["Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis","Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai","Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"];
     const ADDR = "ABCDEFGHIJKLMNO".split("");
     let states = new Array(15).fill(false);
-    let currentMode = 'schedule';
+    let mode = 'schedule';
 
     function setMode(m) {
-        currentMode = m;
-        document.getElementById('btnSched').className = (m === 'schedule' ? 'mode-btn active' : 'mode-btn');
-        document.getElementById('btnAstro').className = (m === 'astro' ? 'mode-btn active' : 'mode-btn');
-        document.getElementById('schedParams').style.display = (m === 'schedule' ? 'block' : 'none');
-        document.getElementById('astroParams').style.display = (m === 'astro' ? 'block' : 'none');
+        mode = m;
+        document.getElementById('btnSched').classList.toggle('active', m=='schedule');
+        document.getElementById('btnAstro').classList.toggle('active', m=='astro');
+        document.getElementById('p-sched').style.display = m=='schedule'?'block':'none';
+        document.getElementById('p-astro').style.display = m=='astro'?'block':'none';
     }
 
-    function renderVillages() {
-        const container = document.getElementById('villageList');
-        container.innerHTML = VILLAGES.map((name, i) => `
+    function render() {
+        document.getElementById('vList').innerHTML = VILLAGES.map((n, i) => `
             <div class="village-row">
-                <span>${name}</span>
+                <span>${n}</span>
                 <input type="checkbox" onchange="states[${i}]=this.checked">
             </div>
         `).join('');
     }
 
-    async function sendData() {
-        const status = document.getElementById('status');
-        status.innerText = "Siunčiama...";
-        
+    async function send() {
+        const stat = document.getElementById('stat');
+        stat.innerText = "Siunčiama...";
         const payload = {
-            mode: currentMode,
-            on1: document.getElementById('on1').value,
-            off1: document.getElementById('off1').value,
-            on2: document.getElementById('on2').value,
-            off2: document.getElementById('off2').value,
-            astro_sunset: parseInt(document.getElementById('sunsetOff').value),
-            astro_sunrise: parseInt(document.getElementById('sunriseOff').value),
-            villages: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
-            override: document.getElementById('overrideCheck').checked,
+            m: mode,
+            o1: document.getElementById('on1').value, f1: document.getElementById('off1').value,
+            o2: document.getElementById('on2').value, f2: document.getElementById('off2').value,
+            as: parseInt(document.getElementById('sSet').value), ar: parseInt(document.getElementById('sRise').value),
+            v: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
+            ov: document.getElementById('ovr').checked,
             ts: Math.floor(Date.now() / 1000)
         };
-
-        const jsonStr = JSON.stringify(payload);
         try {
-            const url = `https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(jsonStr)}`;
-            const response = await fetch(url);
-            const data = await response.text();
-            if(data > 0) {
-                status.innerText = "Sėkmingai priimta. ID: " + data;
-                status.style.color = "#22d3a0";
-            } else {
-                status.innerText = "Klaida: ThingSpeak užsiėmęs (palaukite 15s)";
-                status.style.color = "#f25c5c";
-            }
-        } catch (e) {
-            status.innerText = "Tinklo klaida";
-        }
+            const r = await fetch(`https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(JSON.stringify(payload))}`);
+            const d = await r.text();
+            stat.innerText = d > 0 ? "Išsiųsta! (ID: "+d+")" : "Klaida (palaukite 15s)";
+        } catch(e) { stat.innerText = "Tinklo klaida"; }
     }
-
-    renderVillages();
+    render();
 </script>
 </body>
 </html>
