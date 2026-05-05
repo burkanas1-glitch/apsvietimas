@@ -1,196 +1,126 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gatvių Apšvietimas — Žeimelio Seniūnija</title>
-<style>
-  /* Stiliai lieka tokie patys kaip originalo, praleidžiami dėl vietos taupymo */
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap');
-  :root { --bg: #0a0e1a; --bg2: #111827; --bg3: #1a2235; --accent: #f5a623; --green: #22d3a0; --red: #f25c5c; --yellow: #fbbf24; --blue: #4ea8de; --text: #e2e8f0; --muted: #64748b; --border: #1e2d45; --mono: 'Share Tech Mono', monospace; --sans: 'Barlow', sans-serif; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
-  .wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 16px 12px 48px; }
-  header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .logo-text h1 { font-size: 14px; font-weight: 700; text-transform: uppercase; line-height: 1.2; }
-  .logo-text p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
-  .status-pill { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 5px 10px; font-size: 11px; font-family: var(--mono); color: var(--muted); }
-  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
-  .status-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .status-dot.err { background: var(--red); box-shadow: 0 0 6px var(--red); }
-  .status-dot.pending { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-  .section-title { font-size: 10px; font-family: var(--mono); color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-  .schedule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .period-block { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-  .period-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; }
-  .time-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-  .time-row label { font-size: 11px; color: var(--muted); width: 28px; }
-  .time-row input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--accent); font-family: var(--mono); font-size: 16px; padding: 6px 8px; outline: none; color-scheme: dark; }
-  .toggle { position: relative; width: 44px; height: 24px; }
-  .toggle input { display: none; }
-  .toggle-track { position: absolute; inset: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-  .toggle input:checked + .toggle-track { background: rgba(34,211,160,0.2); border-color: var(--green); }
-  .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--muted); transition: all 0.2s; }
-  .toggle input:checked ~ .toggle-thumb { left: 23px; background: var(--green); box-shadow: 0 0 8px var(--green); }
-  .mode-bar, .villages-toolbar, .override-bar { display: flex; gap: 8px; margin-bottom: 12px; }
-  .btn-mode, .btn-small, .btn-override-on, .btn-override-off { flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; border: 1px solid var(--border); background: var(--bg3); color: var(--muted); }
-  .btn-mode.active, .btn-override-on.active, .btn-override-off.active { background: rgba(245,166,35,0.15); color: var(--accent); border-color: var(--accent); }
-  .village-list { display: flex; flex-direction: column; gap: 6px; }
-  .village-row { display: flex; align-items: center; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; gap: 8px; }
-  .village-id { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 20px; }
-  .village-name { flex: 1; font-size: 14px; }
-  .node-badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--border); background: var(--bg); }
-  .btn-send { width: 100%; padding: 14px; background: var(--accent); color: #000; border: none; border-radius: 10px; font-family: var(--mono); font-size: 14px; font-weight: 700; cursor: pointer; }
-  .json-preview { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: 11px; color: var(--blue); white-space: pre-wrap; margin-bottom: 12px; max-height: 150px; overflow: auto; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apšvietimo Valdymas — Žeimelis</title>
+    <style>
+        body { background: #0a0e1a; color: #e2e8f0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .card { background: #111827; border: 1px solid #1e2d45; border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; max-width: 500px; }
+        h1, h2 { color: #f5a623; text-align: center; margin-top: 0; font-size: 1.2rem; }
+        .mode-select { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; padding: 12px; border: 1px solid #1e2d45; background: #1a2235; color: #64748b; cursor: pointer; border-radius: 6px; font-weight: bold; }
+        .mode-btn.active { border-color: #f5a623; color: #f5a623; background: rgba(245,166,35,0.1); }
+        .village-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #1e2d45; }
+        .btn-send { width: 100%; padding: 15px; background: #f5a623; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 15px; }
+        .status-box { background: #000; color: #4ea8de; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; margin-top: 15px; width: 100%; box-sizing: border-box; text-align: center; }
+        input[type="time"], input[type="number"] { background: #1a2235; color: #fff; border: 1px solid #334155; padding: 8px; border-radius: 4px; width: 80px; }
+        label { font-size: 0.9rem; color: #94a3b8; }
+        .override-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 10px; background: #1a2235; border-radius: 6px; }
+    </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo"><div class="logo-icon">💡</div><div class="logo-text"><h1>Gatvių Apšvietimas</h1><p>Žeimelio seniūnija</p></div></div>
-    <div class="status-pill"><div class="status-dot" id="statusDot"></div><span id="statusText">—</span></div>
-  </header>
 
-  <div class="section-title">Režimas ir Grafikas</div>
-  <div class="card">
-    <div class="mode-bar">
-      <button class="btn-mode active" id="btnModeFixed" onclick="setMode('fixed')">📅 Fiksuotas</button>
-      <button class="btn-mode" id="btnModeAstro" onclick="setMode('astro')">🌅 Astronominis</button>
+<div class="card">
+    <h1>💡 SISTEMOS NUSTATYMAI</h1>
+    <div class="mode-select">
+        <button id="btnSched" class="mode-btn active" onclick="setMode('schedule')">LAIKRODIS</button>
+        <button id="btnAstro" class="mode-btn" onclick="setMode('astro')">SAULĖ (ASTRO)</button>
     </div>
 
-    <div id="fixedPanel">
-      <div class="schedule-grid">
-        <div class="period-block">
-          <div class="time-row"><label>I ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON()"></div>
-          <div class="time-row"><label>I IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON()"></div>
-          <label class="toggle"><input type="checkbox" id="p1en" checked onchange="updateJSON()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    <div id="schedParams">
+        <div style="display:flex; justify-content: space-between; margin-bottom:10px;">
+            <span>I Periodas:</span>
+            <span><input type="time" id="on1" value="22:30"> iki <input type="time" id="off1" value="06:00"></span>
         </div>
-        <div class="period-block">
-          <div class="time-row"><label>II ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON()"></div>
-          <div class="time-row"><label>II IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON()"></div>
-          <label class="toggle"><input type="checkbox" id="p2en" onchange="updateJSON()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        <div style="display:flex; justify-content: space-between;">
+            <span>II Periodas:</span>
+            <span><input type="time" id="on2" value="00:00"> iki <input type="time" id="off2" value="02:00"></span>
         </div>
-      </div>
     </div>
 
-    <div id="astroPanel" style="display:none">
-      <div class="schedule-grid">
-        <div class="period-block">
-          <div class="period-label">Po saulėlydžio</div>
-          <div class="time-row"><input type="number" id="sunsetOffset" value="15" onchange="updateJSON()"> min</div>
+    <div id="astroParams" style="display:none;">
+        <div style="display:flex; justify-content: space-between; margin-bottom:10px;">
+            <label>Vakaro poslinkis (min):</label> <input type="number" id="sunsetOff" value="15">
         </div>
-        <div class="period-block">
-          <div class="period-label">Prieš saulėtekį</div>
-          <div class="time-row"><input type="number" id="sunriseOffset" value="30" onchange="updateJSON()"> min</div>
+        <div style="display:flex; justify-content: space-between;">
+            <label>Ryto poslinkis (min):</label> <input type="number" id="sunriseOff" value="30">
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <div class="section-title">Kaimų valdymas</div>
-  <div class="card">
-    <div class="override-bar">
-      <button class="btn-override-on" id="btnOverrideOn" onclick="setOverride(true)">⚡ Rankinis režimas</button>
-      <button class="btn-override-off" id="btnOverrideOff" onclick="setOverride(false)">⏱ Grafiko režimas</button>
+<div class="card">
+    <h2>KAIMŲ VALDYMAS</h2>
+    <div id="villageList"></div>
+    
+    <div class="override-row">
+        <span>Rankinis režimas (Override):</span>
+        <input type="checkbox" id="overrideCheck">
     </div>
-    <div class="villages-toolbar">
-      <button class="btn-small" onclick="setAll(true)">Visi ĮJ</button>
-      <button class="btn-small" onclick="setAll(false)">Visi IŠJ</button>
-    </div>
-    <div class="village-list" id="villageList"></div>
-  </div>
 
-  <div class="section-title">Duomenų siuntimas</div>
-  <div class="card">
-    <div class="json-preview" id="jsonPreview"></div>
-    <button class="btn-send" id="sendBtn" onclick="sendToThingSpeak()">Siųsti į sistemą</button>
-  </div>
+    <button class="btn-send" onclick="sendData()">SIŲSTI Į THINGSPEAK</button>
+    <div class="status-box" id="status">Sistemos paruošta</div>
 </div>
 
 <script>
-const VILLAGES = ["Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis","Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai","Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"];
-const ADDR = "ABCDEFGHIJKLMNO".split("");
-const WRITE_KEY = "JFE3B81LD0HKM1FX";
+    const VILLAGES = ["Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis","Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai","Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"];
+    const ADDR = "ABCDEFGHIJKLMNO".split("");
+    let states = new Array(15).fill(false);
+    let currentMode = 'schedule';
 
-let states = new Array(15).fill(true);
-let overrideMode = false;
-let astroMode = false;
+    function setMode(m) {
+        currentMode = m;
+        document.getElementById('btnSched').className = (m === 'schedule' ? 'mode-btn active' : 'mode-btn');
+        document.getElementById('btnAstro').className = (m === 'astro' ? 'mode-btn active' : 'mode-btn');
+        document.getElementById('schedParams').style.display = (m === 'schedule' ? 'block' : 'none');
+        document.getElementById('astroParams').style.display = (m === 'astro' ? 'block' : 'none');
+    }
 
-function buildVillages() {
-  const list = document.getElementById('villageList');
-  list.innerHTML = '';
-  VILLAGES.forEach((name, i) => {
-    const row = document.createElement('div');
-    row.className = 'village-row';
-    row.innerHTML = `
-      <span class="village-id">${i+1}</span>
-      <span class="village-name">${name}</span>
-      <label class="toggle">
-        <input type="checkbox" ${states[i] ? 'checked' : ''} onchange="toggleVillage(${i}, this.checked)">
-        <div class="toggle-track"></div><div class="toggle-thumb"></div>
-      </label>
-    `;
-    list.appendChild(row);
-  });
-}
+    function renderVillages() {
+        const container = document.getElementById('villageList');
+        container.innerHTML = VILLAGES.map((name, i) => `
+            <div class="village-row">
+                <span>${name}</span>
+                <input type="checkbox" onchange="states[${i}]=this.checked">
+            </div>
+        `).join('');
+    }
 
-function toggleVillage(i, val) { states[i] = val; updateJSON(); }
-function setAll(val) { states.fill(val); buildVillages(); updateJSON(); }
-function setMode(mode) { 
-  astroMode = (mode === 'astro');
-  document.getElementById('btnModeFixed').classList.toggle('active', !astroMode);
-  document.getElementById('btnModeAstro').classList.toggle('active', astroMode);
-  document.getElementById('fixedPanel').style.display = astroMode ? 'none' : 'block';
-  document.getElementById('astroPanel').style.display = astroMode ? 'block' : 'none';
-  updateJSON();
-}
-function setOverride(val) {
-  overrideMode = val;
-  document.getElementById('btnOverrideOn').classList.toggle('active', val);
-  document.getElementById('btnOverrideOff').classList.toggle('active', !val);
-  updateJSON();
-}
+    async function sendData() {
+        const status = document.getElementById('status');
+        status.innerText = "Siunčiama...";
+        
+        const payload = {
+            mode: currentMode,
+            on1: document.getElementById('on1').value,
+            off1: document.getElementById('off1').value,
+            on2: document.getElementById('on2').value,
+            off2: document.getElementById('off2').value,
+            astro_sunset: parseInt(document.getElementById('sunsetOff').value),
+            astro_sunrise: parseInt(document.getElementById('sunriseOff').value),
+            villages: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
+            override: document.getElementById('overrideCheck').checked,
+            ts: Math.floor(Date.now() / 1000)
+        };
 
-function buildPayload() {
-  const p1 = document.getElementById('p1en').checked;
-  const p2 = document.getElementById('p2en').checked;
-  return {
-    schedule: {
-      mode: astroMode ? 'astro' : 'schedule',
-      on1: p1 ? document.getElementById('on1').value : null,
-      off1: p1 ? document.getElementById('off1').value : null,
-      on2: p2 ? document.getElementById('on2').value : null,
-      off2: p2 ? document.getElementById('off2').value : null,
-      sunset_offset: parseInt(document.getElementById('sunsetOffset').value),
-      sunrise_offset: parseInt(document.getElementById('sunriseOffset').value)
-    },
-    villages: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
-    override: overrideMode,
-    ts: Math.floor(Date.now() / 1000)
-  };
-}
+        const jsonStr = JSON.stringify(payload);
+        try {
+            const url = `https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(jsonStr)}`;
+            const response = await fetch(url);
+            const data = await response.text();
+            if(data > 0) {
+                status.innerText = "Sėkmingai priimta. ID: " + data;
+                status.style.color = "#22d3a0";
+            } else {
+                status.innerText = "Klaida: ThingSpeak užsiėmęs (palaukite 15s)";
+                status.style.color = "#f25c5c";
+            }
+        } catch (e) {
+            status.innerText = "Tinklo klaida";
+        }
+    }
 
-function updateJSON() { document.getElementById('jsonPreview').textContent = JSON.stringify(buildPayload(), null, 2); }
-
-async function sendToThingSpeak() {
-  const btn = document.getElementById('sendBtn');
-  btn.disabled = true; btn.textContent = "Siunčiama...";
-  try {
-    const res = await fetch('https://api.thingspeak.com/update.json', {
-      method: 'POST',
-      body: new URLSearchParams({ api_key: WRITE_KEY, field1: JSON.stringify(buildPayload()) })
-    });
-    if (res.ok) alert("✓ Išsiųsta sėkmingai");
-  } catch (e) { alert("✗ Klaida"); }
-  btn.disabled = false; btn.textContent = "Siųsti į sistemą";
-}
-
-buildVillages();
-updateJSON();
+    renderVillages();
 </script>
 </body>
 </html>
