@@ -2,75 +2,91 @@
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
-    <title>Žeimelio Apšvietimas V3</title>
+    <title>Gatvių Apšvietimas — Žeimelio Seniūnija</title>
     <style>
-        body { background: #0a0e1a; color: #e2e8f0; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .card { background: #111827; border: 1px solid #1e2d45; border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; max-width: 500px; }
-        h1 { color: #f5a623; text-align: center; font-size: 1.2rem; }
-        .village-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #1e2d45; }
-        .btn-send { width: 100%; padding: 15px; background: #f5a623; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .status-box { background: #000; color: #4ea8de; padding: 10px; border-radius: 5px; font-family: monospace; margin-top: 10px; text-align: center; }
-        .mode-select { display: flex; gap: 10px; margin-bottom: 15px; }
-        .mode-btn { flex: 1; padding: 10px; background: #1a2235; color: #64748b; border: 1px solid #1e2d45; cursor: pointer; }
-        .mode-btn.active { color: #f5a623; border-color: #f5a623; }
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap');
+        :root { --bg: #0a0e1a; --bg2: #111827; --bg3: #1a2235; --accent: #f5a623; --green: #22d3a0; --text: #e2e8f0; --border: #1e2d45; --mono: 'Share Tech Mono', monospace; }
+        body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; width: 100%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { font-family: var(--mono); color: var(--accent); font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px; text-align: center; letter-spacing: 2px; }
+        .mode-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-mode { flex: 1; padding: 12px; background: var(--bg3); border: 1px solid var(--border); color: #64748b; cursor: pointer; font-family: var(--mono); border-radius: 6px; transition: 0.3s; }
+        .btn-mode.active { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.1); }
+        .param-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: var(--mono); font-size: 0.9rem; }
+        input { background: var(--bg); border: 1px solid var(--border); color: var(--accent); padding: 8px; border-radius: 4px; font-family: var(--mono); }
+        .village-list { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+        .village-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg3); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
+        .btn-send { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-family: var(--mono); font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.3s; }
+        .btn-send:hover { background: #ffb338; transform: translateY(-2px); }
+        .status-box { margin-top: 15px; background: #000; padding: 12px; border-radius: 6px; font-family: var(--mono); font-size: 13px; color: #4ea8de; border: 1px solid var(--border); text-align: center; min-height: 20px; }
+        .override-panel { background: rgba(245,166,35,0.05); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>REŽIMO NUSTATYMAI</h1>
-    <div class="mode-select">
-        <button id="btnSched" class="mode-btn active" onclick="setMode('schedule')">GRAFIKAS</button>
-        <button id="btnAstro" class="mode-btn" onclick="setMode('astro')">ASTRO</button>
+    <h1>Sistemos Konfigūracija</h1>
+    <div class="mode-bar">
+        <button id="btnS" class="btn-mode active" onclick="setMode('schedule')">Laiko Grafikas</button>
+        <button id="btnA" class="btn-mode" onclick="setMode('astro')">Astronominis</button>
     </div>
+
     <div id="p-sched">
-        I: <input type="time" id="on1" value="22:30"> - <input type="time" id="off1" value="06:00"><br>
-        II: <input type="time" id="on2" value="00:00"> - <input type="time" id="off2" value="02:00">
+        <div class="param-row"><span>I Periodas (ĮJ/IŠJ):</span> <div><input type="time" id="on1" value="22:30"> <input type="time" id="off1" value="06:00"></div></div>
+        <div class="param-row"><span>II Periodas (ĮJ/IŠJ):</span> <div><input type="time" id="on2" value="00:00"> <input type="time" id="off2" value="02:00"></div></div>
     </div>
+
     <div id="p-astro" style="display:none">
-        Vakaras offset: <input type="number" id="sSet" value="15"> min<br>
-        Rytas offset: <input type="number" id="sRise" value="30"> min
+        <div class="param-row"><span>Saulėlydžio poslinkis (min):</span> <input type="number" id="sSet" value="15"></div>
+        <div class="param-row"><span>Saulėtekio poslinkis (min):</span> <input type="number" id="sRise" value="30"></div>
     </div>
 </div>
 
 <div class="card">
-    <h1>KAIMAI</h1>
-    <div id="vList"></div>
-    <div style="margin: 15px 0;">
-        <label><input type="checkbox" id="ovr"> ĮJUNGTI RANKINĮ VALDYMĄ</label>
+    <h1>Kaimų Valdymas</h1>
+    <div class="village-list" id="vList"></div>
+    
+    <div class="override-panel">
+        <div class="param-row" style="margin-bottom:0;">
+            <span>Aktyvuoti rankinį valdymą:</span>
+            <input type="checkbox" id="ovr" style="width:20px; height:20px; cursor:pointer;">
+        </div>
     </div>
-    <button class="btn-send" onclick="send()">SIŲSTI NUSTATYMUS</button>
-    <div class="status-box" id="stat">Paruošta</div>
+
+    <button class="btn-send" onclick="sendToSystem()">Siųsti Komandas</button>
+    <div class="status-box" id="status">Sistemos paruošta darbui</div>
 </div>
 
 <script>
     const VILLAGES = ["Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis","Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai","Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"];
     const ADDR = "ABCDEFGHIJKLMNO".split("");
     let states = new Array(15).fill(false);
-    let mode = 'schedule';
+    let curMode = 'schedule';
 
     function setMode(m) {
-        mode = m;
-        document.getElementById('btnSched').classList.toggle('active', m=='schedule');
-        document.getElementById('btnAstro').classList.toggle('active', m=='astro');
+        curMode = m;
+        document.getElementById('btnS').classList.toggle('active', m=='schedule');
+        document.getElementById('btnA').classList.toggle('active', m=='astro');
         document.getElementById('p-sched').style.display = m=='schedule'?'block':'none';
         document.getElementById('p-astro').style.display = m=='astro'?'block':'none';
     }
 
     function render() {
-        document.getElementById('vList').innerHTML = VILLAGES.map((n, i) => `
+        document.getElementById('vList').innerHTML = VILLAGES.map((name, i) => `
             <div class="village-row">
-                <span>${n}</span>
-                <input type="checkbox" onchange="states[${i}]=this.checked">
+                <span style="font-family:var(--mono); font-size:14px;">${i+1}. ${name}</span>
+                <input type="checkbox" onchange="states[${i}]=this.checked" style="width:18px; height:18px;">
             </div>
         `).join('');
     }
 
-    async function send() {
-        const stat = document.getElementById('stat');
-        stat.innerText = "Siunčiama...";
+    async function sendToSystem() {
+        const status = document.getElementById('status');
+        status.innerText = "SIUNČIAMA...";
+        status.style.color = "var(--accent)";
+
         const payload = {
-            m: mode,
+            m: curMode,
             o1: document.getElementById('on1').value, f1: document.getElementById('off1').value,
             o2: document.getElementById('on2').value, f2: document.getElementById('off2').value,
             as: parseInt(document.getElementById('sSet').value), ar: parseInt(document.getElementById('sRise').value),
@@ -78,11 +94,21 @@
             ov: document.getElementById('ovr').checked,
             ts: Math.floor(Date.now() / 1000)
         };
+
         try {
             const r = await fetch(`https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(JSON.stringify(payload))}`);
             const d = await r.text();
-            stat.innerText = d > 0 ? "Išsiųsta! (ID: "+d+")" : "Klaida (palaukite 15s)";
-        } catch(e) { stat.innerText = "Tinklo klaida"; }
+            if(d > 0) {
+                status.innerText = "SĖKMINGAI IŠSIŲSTA (ID: " + d + ")";
+                status.style.color = "var(--green)";
+            } else {
+                status.innerText = "KLAIDA: PALAUKITE 15 SEK.";
+                status.style.color = "#f25c5c";
+            }
+        } catch (e) {
+            status.innerText = "TINKLO KLAIDA";
+            status.style.color = "#f25c5c";
+        }
     }
     render();
 </script>
