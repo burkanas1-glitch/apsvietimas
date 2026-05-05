@@ -10,16 +10,14 @@
         .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; width: 100%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         h1 { font-family: var(--mono); color: var(--accent); font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px; text-align: center; letter-spacing: 2px; }
         .mode-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-mode { flex: 1; padding: 12px; background: var(--bg3); border: 1px solid var(--border); color: #64748b; cursor: pointer; font-family: var(--mono); border-radius: 6px; transition: 0.3s; }
+        .btn-mode { flex: 1; padding: 12px; background: var(--bg3); border: 1px solid var(--border); color: #64748b; cursor: pointer; font-family: var(--mono); border-radius: 6px; }
         .btn-mode.active { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.1); }
         .param-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: var(--mono); font-size: 0.9rem; }
-        input { background: var(--bg); border: 1px solid var(--border); color: var(--accent); padding: 8px; border-radius: 4px; font-family: var(--mono); }
+        input[type="time"], input[type="number"] { background: var(--bg); border: 1px solid var(--border); color: var(--accent); padding: 8px; border-radius: 4px; font-family: var(--mono); width: 80px; }
         .village-list { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
         .village-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg3); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
-        .btn-send { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-family: var(--mono); font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.3s; }
-        .btn-send:hover { background: #ffb338; transform: translateY(-2px); }
-        .status-box { margin-top: 15px; background: #000; padding: 12px; border-radius: 6px; font-family: var(--mono); font-size: 13px; color: #4ea8de; border: 1px solid var(--border); text-align: center; min-height: 20px; }
-        .override-panel { background: rgba(245,166,35,0.05); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .btn-send { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-family: var(--mono); font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 1rem; }
+        .status-box { margin-top: 15px; background: #000; padding: 12px; border-radius: 6px; font-family: var(--mono); font-size: 13px; color: #4ea8de; border: 1px solid var(--border); text-align: center; min-height: 20px; width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -30,41 +28,35 @@
         <button id="btnS" class="btn-mode active" onclick="setMode('schedule')">Laiko Grafikas</button>
         <button id="btnA" class="btn-mode" onclick="setMode('astro')">Astronominis</button>
     </div>
-
     <div id="p-sched">
-        <div class="param-row"><span>I Periodas (ĮJ/IŠJ):</span> <div><input type="time" id="on1" value="22:30"> <input type="time" id="off1" value="06:00"></div></div>
-        <div class="param-row"><span>II Periodas (ĮJ/IŠJ):</span> <div><input type="time" id="on2" value="00:00"> <input type="time" id="off2" value="02:00"></div></div>
+        <div class="param-row"><span>I Periodas:</span> <div><input type="time" id="on1" value="22:30"> <input type="time" id="off1" value="06:00"></div></div>
+        <div class="param-row"><span>II Periodas:</span> <div><input type="time" id="on2" value="00:00"> <input type="time" id="off2" value="02:00"></div></div>
     </div>
-
     <div id="p-astro" style="display:none">
-        <div class="param-row"><span>Saulėlydžio poslinkis (min):</span> <input type="number" id="sSet" value="15"></div>
-        <div class="param-row"><span>Saulėtekio poslinkis (min):</span> <input type="number" id="sRise" value="30"></div>
+        <div class="param-row"><span>Saulėlydžio poslinkis:</span> <input type="number" id="as" value="15"></div>
+        <div class="param-row"><span>Saulėtekio poslinkis:</span> <input type="number" id="ar" value="30"></div>
     </div>
 </div>
 
 <div class="card">
     <h1>Kaimų Valdymas</h1>
     <div class="village-list" id="vList"></div>
-    
-    <div class="override-panel">
-        <div class="param-row" style="margin-bottom:0;">
-            <span>Aktyvuoti rankinį valdymą:</span>
-            <input type="checkbox" id="ovr" style="width:20px; height:20px; cursor:pointer;">
-        </div>
+    <div class="param-row" style="background: rgba(245,166,35,0.1); padding: 10px; border-radius: 8px;">
+        <span>RANKINIS VALDYMAS (Override):</span>
+        <input type="checkbox" id="ovr" style="width:20px; height:20px;">
     </div>
-
-    <button class="btn-send" onclick="sendToSystem()">Siųsti Komandas</button>
-    <div class="status-box" id="status">Sistemos paruošta darbui</div>
+    <button class="btn-send" onclick="send()">Siųsti Komandas</button>
+    <div class="status-box" id="stat">Sistemos paruošta</div>
 </div>
 
 <script>
     const VILLAGES = ["Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis","Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai","Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"];
     const ADDR = "ABCDEFGHIJKLMNO".split("");
     let states = new Array(15).fill(false);
-    let curMode = 'schedule';
+    let mode = 'schedule';
 
     function setMode(m) {
-        curMode = m;
+        mode = m;
         document.getElementById('btnS').classList.toggle('active', m=='schedule');
         document.getElementById('btnA').classList.toggle('active', m=='astro');
         document.getElementById('p-sched').style.display = m=='schedule'?'block':'none';
@@ -72,43 +64,31 @@
     }
 
     function render() {
-        document.getElementById('vList').innerHTML = VILLAGES.map((name, i) => `
+        document.getElementById('vList').innerHTML = VILLAGES.map((n, i) => `
             <div class="village-row">
-                <span style="font-family:var(--mono); font-size:14px;">${i+1}. ${name}</span>
-                <input type="checkbox" onchange="states[${i}]=this.checked" style="width:18px; height:18px;">
+                <span>${i+1}. ${n}</span>
+                <input type="checkbox" onchange="states[${i}]=this.checked">
             </div>
         `).join('');
     }
 
-    async function sendToSystem() {
-        const status = document.getElementById('status');
-        status.innerText = "SIUNČIAMA...";
-        status.style.color = "var(--accent)";
-
+    async function send() {
+        const stat = document.getElementById('stat');
+        stat.innerText = "SIUNČIAMA...";
         const payload = {
-            m: curMode,
+            m: mode,
             o1: document.getElementById('on1').value, f1: document.getElementById('off1').value,
             o2: document.getElementById('on2').value, f2: document.getElementById('off2').value,
-            as: parseInt(document.getElementById('sSet').value), ar: parseInt(document.getElementById('sRise').value),
+            as: parseInt(document.getElementById('as').value), ar: parseInt(document.getElementById('ar').value),
             v: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
             ov: document.getElementById('ovr').checked,
             ts: Math.floor(Date.now() / 1000)
         };
-
         try {
             const r = await fetch(`https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(JSON.stringify(payload))}`);
             const d = await r.text();
-            if(d > 0) {
-                status.innerText = "SĖKMINGAI IŠSIŲSTA (ID: " + d + ")";
-                status.style.color = "var(--green)";
-            } else {
-                status.innerText = "KLAIDA: PALAUKITE 15 SEK.";
-                status.style.color = "#f25c5c";
-            }
-        } catch (e) {
-            status.innerText = "TINKLO KLAIDA";
-            status.style.color = "#f25c5c";
-        }
+            stat.innerText = d > 0 ? "SĖKMINGAI PRIIMTA. ID: " + d : "KLAIDA (PALAUKE 15S)";
+        } catch(e) { stat.innerText = "RYŠIO KLAIDA"; }
     }
     render();
 </script>
