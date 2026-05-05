@@ -1,96 +1,792 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-    <meta charset="UTF-8">
-    <title>Gatvių Apšvietimas — Žeimelio Seniūnija</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap');
-        :root { --bg: #0a0e1a; --bg2: #111827; --bg3: #1a2235; --accent: #f5a623; --green: #22d3a0; --text: #e2e8f0; --border: #1e2d45; --mono: 'Share Tech Mono', monospace; }
-        body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; width: 100%; max-width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { font-family: var(--mono); color: var(--accent); font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px; text-align: center; letter-spacing: 2px; }
-        .mode-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-mode { flex: 1; padding: 12px; background: var(--bg3); border: 1px solid var(--border); color: #64748b; cursor: pointer; font-family: var(--mono); border-radius: 6px; }
-        .btn-mode.active { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.1); }
-        .param-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: var(--mono); font-size: 0.9rem; }
-        input[type="time"], input[type="number"] { background: var(--bg); border: 1px solid var(--border); color: var(--accent); padding: 8px; border-radius: 4px; font-family: var(--mono); width: 80px; }
-        .village-list { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
-        .village-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg3); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); }
-        .btn-send { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-family: var(--mono); font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 1rem; }
-        .status-box { margin-top: 15px; background: #000; padding: 12px; border-radius: 6px; font-family: var(--mono); font-size: 13px; color: #4ea8de; border: 1px solid var(--border); text-align: center; min-height: 20px; width: 100%; box-sizing: border-box; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Apšvietimas">
+<title>Gatvių Apšvietimas — Žeimelio Seniūnija</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg:     #0a0e1a;
+    --bg2:    #111827;
+    --bg3:    #1a2235;
+    --accent: #f5a623;
+    --accent2:#e8820a;
+    --green:  #22d3a0;
+    --red:    #f25c5c;
+    --yellow: #fbbf24;
+    --blue:   #4ea8de;
+    --text:   #e2e8f0;
+    --muted:  #64748b;
+    --border: #1e2d45;
+    --mono:   'Share Tech Mono', monospace;
+    --sans:   'Barlow', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(78,168,222,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(78,168,222,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 680px; margin: 0 auto;
+    padding: 16px 12px 48px;
+  }
+
+  header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo { display: flex; align-items: center; gap: 10px; }
+
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--accent);
+    border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px;
+  }
+
+  .logo-text h1 {
+    font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--text); line-height: 1.2;
+  }
+  .logo-text p { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .status-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 10px;
+    font-size: 11px; font-family: var(--mono); color: var(--muted);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--muted); transition: background 0.3s;
+  }
+  .status-dot.ok      { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+  .status-dot.err     { background: var(--red);    box-shadow: 0 0 6px var(--red); }
+  .status-dot.pending { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+
+  .section-title {
+    font-size: 10px; font-family: var(--mono); color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+
+  .schedule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .period-block {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+
+  .period-label {
+    font-size: 10px; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  .period-toggle {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 10px;
+  }
+
+  .time-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .time-row label { font-size: 11px; color: var(--muted); width: 28px; flex-shrink: 0; }
+
+  .time-row input[type="time"] {
+    flex: 1; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--accent); font-family: var(--mono);
+    font-size: 16px; padding: 6px 8px; outline: none;
+    width: 100%; -webkit-appearance: none; color-scheme: dark;
+  }
+  .time-row input[type="time"]:focus { border-color: var(--accent); }
+
+  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle input { display: none; }
+  .toggle-track {
+    position: absolute; inset: 0; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .toggle input:checked + .toggle-track {
+    background: rgba(34,211,160,0.2); border-color: var(--green);
+  }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--muted); transition: all 0.2s; pointer-events: none;
+  }
+  .toggle input:checked ~ .toggle-thumb {
+    left: 23px; background: var(--green); box-shadow: 0 0 8px var(--green);
+  }
+
+  .villages-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+
+  .mode-bar {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+
+  .btn-mode {
+    flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; transition: all 0.15s;
+    background: var(--bg3); color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-mode:hover { background: var(--bg); color: var(--text); }
+  .btn-mode.active {
+    background: rgba(245,166,35,0.15); color: var(--accent);
+    border-color: rgba(245,166,35,0.4);
+    box-shadow: 0 0 8px rgba(245,166,35,0.2);
+  }
+
+  .override-bar { display: flex; gap: 8px; margin-bottom: 10px; }
+
+  .btn-override-on {
+    flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; transition: all 0.15s;
+    background: rgba(251,191,36,0.1); color: var(--yellow);
+    border: 1px solid rgba(251,191,36,0.3);
+  }
+  .btn-override-on:hover  { background: rgba(251,191,36,0.2); }
+  .btn-override-on.active {
+    background: rgba(251,191,36,0.25); border-color: var(--yellow);
+    box-shadow: 0 0 8px rgba(251,191,36,0.3);
+  }
+
+  .btn-override-off {
+    flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; transition: all 0.15s;
+    background: rgba(78,168,222,0.1); color: var(--blue);
+    border: 1px solid rgba(78,168,222,0.3);
+  }
+  .btn-override-off:hover  { background: rgba(78,168,222,0.2); }
+  .btn-override-off.active {
+    background: rgba(78,168,222,0.25); border-color: var(--blue);
+    box-shadow: 0 0 8px rgba(78,168,222,0.3);
+  }
+
+  .btn-small {
+    flex: 1; padding: 7px 0; border-radius: 7px;
+    border: 1px solid var(--border); font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.05em; cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+  }
+  .btn-all-on  { background: rgba(34,211,160,0.1); color: var(--green);  border-color: rgba(34,211,160,0.3); }
+  .btn-all-on:hover  { background: rgba(34,211,160,0.2); }
+  .btn-all-off { background: rgba(242,92,92,0.1);  color: var(--red);    border-color: rgba(242,92,92,0.3); }
+  .btn-all-off:hover { background: rgba(242,92,92,0.2); }
+  .btn-sched   { background: rgba(245,166,35,0.1); color: var(--accent); border-color: rgba(245,166,35,0.3); }
+  .btn-sched:hover   { background: rgba(245,166,35,0.2); }
+
+  .status-bar {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; }
+  .legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .btn-refresh {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(78,168,222,0.1); border: 1px solid rgba(78,168,222,0.3);
+    color: var(--blue); border-radius: 7px; padding: 6px 12px;
+    font-family: var(--mono); font-size: 11px; cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+    letter-spacing: 0.05em; white-space: nowrap;
+  }
+  .btn-refresh:hover { background: rgba(78,168,222,0.2); }
+  .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
+  .spin-icon { display: inline-block; }
+  .btn-refresh.loading .spin-icon { animation: spin 0.7s linear infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .village-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .village-row {
+    display: flex; align-items: center;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+    transition: border-color 0.2s, background 0.2s; gap: 8px;
+  }
+  .village-row.cmd-on { border-color: rgba(34,211,160,0.35); background: rgba(34,211,160,0.04); }
+
+  .village-id   { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 20px; flex-shrink: 0; }
+  .village-name { flex: 1; font-size: 14px; color: var(--text); }
+  .village-addr { font-family: var(--mono); font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+  .node-badge {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0; font-family: var(--mono);
+    border: 1px solid var(--border); background: var(--bg); transition: all 0.3s;
+  }
+  .node-badge.s-unknown { background: var(--bg);                 border-color: var(--border); color: var(--muted); }
+  .node-badge.s-pending { background: rgba(251,191,36,0.15);     border-color: var(--yellow); color: var(--yellow); }
+  .node-badge.s-ok      { background: rgba(34,211,160,0.15);     border-color: var(--green);  color: var(--green); }
+  .node-badge.s-err     { background: rgba(242,92,92,0.15);      border-color: var(--red);    color: var(--red); }
+
+  .json-preview {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; font-family: var(--mono);
+    font-size: 11px; color: var(--blue); white-space: pre-wrap;
+    word-break: break-all; line-height: 1.6;
+    max-height: 130px; overflow-y: auto; margin-bottom: 12px;
+  }
+
+  .btn-send {
+    width: 100%; padding: 14px; background: var(--accent); color: #000;
+    border: none; border-radius: 10px; font-family: var(--mono);
+    font-size: 14px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-send:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-send:active { transform: translateY(0); }
+  .btn-send:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+  .btn-send .spinner {
+    display: none; width: 16px; height: 16px;
+    border: 2px solid rgba(0,0,0,0.3); border-top-color: #000;
+    border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto;
+  }
+  .btn-send.loading span { display: none; }
+  .btn-send.loading .spinner { display: block; }
+
+  .last-sync {
+    text-align: center; font-family: var(--mono);
+    font-size: 11px; color: var(--muted); margin-top: 8px;
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 20px;
+    font-family: var(--mono); font-size: 12px; color: var(--text);
+    z-index: 100; transition: transform 0.3s ease;
+    white-space: nowrap; display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .toast.show    { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: rgba(34,211,160,0.4); color: var(--green); }
+  .toast.error   { border-color: rgba(242,92,92,0.4);  color: var(--red); }
+  .toast.info    { border-color: rgba(78,168,222,0.4); color: var(--blue); }
+</style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="card">
-    <h1>Sistemos Konfigūracija</h1>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">💡</div>
+      <div class="logo-text">
+        <h1>Gatvių Apšvietimas</h1>
+        <p>Žeimelio seniūnija · 15 kaimų</p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">—</span>
+    </div>
+  </header>
+
+  <div class="section-title">Grafikas</div>
+  <div class="card">
+
+    <!-- Režimo pasirinkimas -->
     <div class="mode-bar">
-        <button id="btnS" class="btn-mode active" onclick="setMode('schedule')">Laiko Grafikas</button>
-        <button id="btnA" class="btn-mode" onclick="setMode('astro')">Astronominis</button>
+      <button class="btn-mode active" id="btnModeFixed" onclick="setMode('fixed')">📅 Fiksuotas</button>
+      <button class="btn-mode"        id="btnModeAstro" onclick="setMode('astro')">🌅 Astronominis</button>
     </div>
-    <div id="p-sched">
-        <div class="param-row"><span>I Periodas:</span> <div><input type="time" id="on1" value="22:30"> <input type="time" id="off1" value="06:00"></div></div>
-        <div class="param-row"><span>II Periodas:</span> <div><input type="time" id="on2" value="00:00"> <input type="time" id="off2" value="02:00"></div></div>
+
+    <!-- Fiksuotas grafikas -->
+    <div id="fixedPanel">
+      <div class="schedule-grid">
+        <div class="period-block">
+          <div class="period-toggle">
+            <span class="period-label">I periodas</span>
+            <label class="toggle">
+              <input type="checkbox" id="p1en" checked onchange="updateJSON(); saveSettings()">
+              <div class="toggle-track"></div><div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="time-row">
+            <label>ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON(); saveSettings()">
+          </div>
+          <div class="time-row">
+            <label>IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON(); saveSettings()">
+          </div>
+        </div>
+        <div class="period-block">
+          <div class="period-toggle">
+            <span class="period-label">II periodas</span>
+            <label class="toggle">
+              <input type="checkbox" id="p2en" onchange="updateJSON(); saveSettings()">
+              <div class="toggle-track"></div><div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="time-row">
+            <label>ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON(); saveSettings()">
+          </div>
+          <div class="time-row">
+            <label>IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON(); saveSettings()">
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="p-astro" style="display:none">
-        <div class="param-row"><span>Saulėlydžio poslinkis (min):</span> <input type="number" id="as" value="15"></div>
-        <div class="param-row"><span>Saulėtekio poslinkis (min):</span> <input type="number" id="ar" value="30"></div>
+
+    <!-- Astronominis grafikas -->
+    <div id="astroPanel" style="display:none">
+      <div class="schedule-grid">
+        <div class="period-block">
+          <div class="period-label" style="margin-bottom:10px">🌇 Saulėlydis</div>
+          <div class="time-row">
+            <label style="width:60px;font-size:11px">Įj. po</label>
+            <input type="number" id="sunsetOffset" value="15" min="0" max="120"
+              onchange="updateJSON(); saveSettings()"
+              style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;
+                     color:var(--accent);font-family:var(--mono);font-size:16px;padding:6px 8px;
+                     outline:none;color-scheme:dark">
+            <label style="width:30px;font-size:11px;color:var(--muted)">min</label>
+          </div>
+        </div>
+        <div class="period-block">
+          <div class="period-label" style="margin-bottom:10px">🌅 Saulėtekis</div>
+          <div class="time-row">
+            <label style="width:60px;font-size:11px">Išj. prieš</label>
+            <input type="number" id="sunriseOffset" value="30" min="0" max="120"
+              onchange="updateJSON(); saveSettings()"
+              style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;
+                     color:var(--accent);font-family:var(--mono);font-size:16px;padding:6px 8px;
+                     outline:none;color-scheme:dark">
+            <label style="width:30px;font-size:11px;color:var(--muted)">min</label>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--bg3);border-radius:6px;
+                  font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center">
+        📍 Žeimelis 56.13°N 23.87°E · ESP32 skaičiuoja pats
+      </div>
     </div>
+
+  </div>
+
+  <div class="section-title">Kaimai</div>
+  <div class="card">
+    <div class="villages-toolbar">
+      <button class="btn-small btn-all-on"  onclick="setAll(true)">▶ Visi ĮJ</button>
+      <button class="btn-small btn-all-off" onclick="setAll(false)">■ Visi IŠJ</button>
+      <button class="btn-small btn-sched"   onclick="setSchedule()">⏱ Pagal grafiką</button>
+    </div>
+    <div class="override-bar">
+      <button class="btn-override-on"  id="btnOverrideOn"  onclick="setOverride(true)">⚡ Rankinis režimas</button>
+      <button class="btn-override-off" id="btnOverrideOff" onclick="setOverride(false)">⏱ Grąžinti į grafiką</button>
+    </div>
+    <div class="status-bar">
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--muted)"></div>Nežinoma</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Laukiama</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>OK</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Klaida</div>
+      </div>
+      <button class="btn-refresh" id="refreshBtn" onclick="fetchStatus()">
+        <span class="spin-icon">↻</span>
+        <span>Statusas</span>
+      </button>
+    </div>
+    <div class="village-list" id="villageList"></div>
+  </div>
+
+  <div class="section-title">Siųsti</div>
+  <div class="card">
+    <div class="json-preview" id="jsonPreview"></div>
+    <button class="btn-send" id="sendBtn" onclick="sendToThingSpeak()">
+      <span>Siųsti į ThingSpeak</span>
+      <div class="spinner"></div>
+    </button>
+    <div class="last-sync" id="lastSync">Dar nesiųsta</div>
+  </div>
+
 </div>
 
-<div class="card">
-    <h1>Kaimų Valdymas</h1>
-    <div class="village-list" id="vList"></div>
-    <div class="param-row" style="background: rgba(245,166,35,0.1); padding: 10px; border-radius: 8px;">
-        <span>RANKINIS VALDYMAS (Override):</span>
-        <input type="checkbox" id="ovr" style="width:20px; height:20px;">
-    </div>
-    <button class="btn-send" onclick="send()">Siųsti Komandas</button>
-    <div class="status-box" id="stat">Sistemos paruošta</div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-    const VILLAGES = ["Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis","Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai","Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"];
-    const ADDR = "ABCDEFGHIJKLMNO".split("");
-    let states = new Array(15).fill(false);
-    let mode = 'schedule';
+const VILLAGES = [
+  "Žeimelis","Noreikai","Staškavičiai","Noriūnai","Mikoliškis",
+  "Bardiškiai","Diržiai","Steigviliai","Grikpedžiai","Mažučiai",
+  "Margiai","Lauksodis","Nociūnai","Akmenėliai","Didysis Plonėnas"
+];
+const ADDR       = "ABCDEFGHIJKLMNO".split("");
+const CHANNEL_ID = "3356658";
+const WRITE_KEY  = "JFE3B81LD0HKM1FX";
+const READ_KEY   = "NIPNDS28ZXRZFO9S";
 
-    function setMode(m) {
-        mode = m;
-        document.getElementById('btnS').classList.toggle('active', m=='schedule');
-        document.getElementById('btnA').classList.toggle('active', m=='astro');
-        document.getElementById('p-sched').style.display = m=='schedule'?'block':'none';
-        document.getElementById('p-astro').style.display = m=='astro'?'block':'none';
+let states     = new Array(15).fill(true);
+let overrideMode = false;    // true = rankinis, false = grafiko
+let astroMode    = false;    // true = astronominis rezimas
+let lastSentStates = new Array(15).fill(null); // null = dar nesiųsta
+let nodeStatus = new Array(15).fill(null); // null|'pending'|'ok'|'err'
+
+// ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
+
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'apsvietimas-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// ── VILLAGE LIST ──────────────────────────────────────────────────────────────
+
+function buildVillages() {
+  const list = document.getElementById('villageList');
+  list.innerHTML = '';
+  VILLAGES.forEach((name, i) => {
+    const row = document.createElement('div');
+    row.className = 'village-row ' + (states[i] ? 'cmd-on' : '');
+    row.id = `vrow_${i}`;
+    row.innerHTML = `
+      <span class="village-id">${String(i+1).padStart(2,'0')}</span>
+      <span class="village-name">${name}</span>
+      <span class="village-addr">${ADDR[i]}</span>
+      <div class="node-badge s-unknown" id="nb_${i}" title="Nežinoma">·</div>
+      <label class="toggle">
+        <input type="checkbox" ${states[i] ? 'checked' : ''} onchange="toggleVillage(${i}, this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    `;
+    list.appendChild(row);
+  });
+  renderBadges();
+}
+
+function toggleVillage(i, val) {
+  states[i] = val;
+  nodeStatus[i] = null;
+  document.getElementById(`vrow_${i}`).className = 'village-row ' + (val ? 'cmd-on' : '');
+  renderBadges();
+  updateJSON();
+  saveSettings();
+}
+
+function setAll(val) {
+  states = new Array(15).fill(val);
+  nodeStatus = new Array(15).fill(null);
+  buildVillages();
+  updateJSON();
+  saveSettings();
+}
+
+function setSchedule() {
+  states = new Array(15).fill(true);
+  nodeStatus = new Array(15).fill(null);
+  buildVillages();
+  updateJSON();
+}
+
+// ── BADGES ────────────────────────────────────────────────────────────────────
+
+const BADGE = {
+  null:    { cls: 's-unknown', icon: '·', title: 'Nežinoma' },
+  pending: { cls: 's-pending', icon: '…', title: 'Laukiama' },
+  ok:      { cls: 's-ok',      icon: '✓', title: 'Patvirtinta' },
+  err:     { cls: 's-err',     icon: '✗', title: 'Klaida / neatsakė' },
+};
+
+function renderBadges() {
+  VILLAGES.forEach((_, i) => {
+    const el = document.getElementById(`nb_${i}`);
+    if (!el) return;
+    const b = BADGE[nodeStatus[i]] || BADGE[null];
+    el.className = `node-badge ${b.cls}`;
+    el.textContent = b.icon;
+    el.title = b.title;
+  });
+}
+
+// ── MODE (fixed / astro) ─────────────────────────────────────────────────────
+
+function setMode(mode) {
+  astroMode = (mode === 'astro');
+  document.getElementById('btnModeFixed').classList.toggle('active', !astroMode);
+  document.getElementById('btnModeAstro').classList.toggle('active',  astroMode);
+  document.getElementById('fixedPanel').style.display = astroMode ? 'none'  : 'block';
+  document.getElementById('astroPanel').style.display = astroMode ? 'block' : 'none';
+  updateJSON();
+  saveSettings();
+}
+
+// ── OVERRIDE ─────────────────────────────────────────────────────────────────
+
+function setOverride(val) {
+  overrideMode = val;
+  document.getElementById('btnOverrideOn').classList.toggle('active', val);
+  document.getElementById('btnOverrideOff').classList.toggle('active', !val);
+  updateJSON();
+  saveSettings();
+}
+
+// ── JSON ──────────────────────────────────────────────────────────────────────
+
+function buildPayload() {
+  const p1 = document.getElementById('p1en').checked;
+  const p2 = document.getElementById('p2en').checked;
+
+  // Schedule object
+  let schedule;
+  if (astroMode) {
+    schedule = {
+      mode: 'astro',
+      sunset_offset:  parseInt(document.getElementById('sunsetOffset').value)  || 15,
+      sunrise_offset: parseInt(document.getElementById('sunriseOffset').value) || 30,
+    };
+  } else {
+    schedule = {
+      mode: 'schedule',
+      on1:  p1 ? document.getElementById('on1').value  : null,
+      off1: p1 ? document.getElementById('off1').value : null,
+      on2:  p2 ? document.getElementById('on2').value  : null,
+      off2: p2 ? document.getElementById('off2').value : null,
+    };
+  }
+
+  let villages;
+  if (overrideMode) {
+    // Rankinis — siųsti tik pasikeitusias nuo paskutinio siuntimo
+    const changed = [];
+    states.forEach((s, i) => {
+      if (lastSentStates[i] !== s) {
+        changed.push(ADDR[i] + (s ? '1' : '0'));
+      }
+    });
+    villages = changed;
+  } else {
+    // Grafiko režimas — siųsti visus
+    villages = states.map((s, i) => ADDR[i] + (s ? '1' : '0'));
+  }
+
+  return {
+    schedule,
+    villages,
+    override: overrideMode,
+    ts: Math.floor(Date.now() / 1000)
+  };
+}
+
+function updateJSON() {
+  document.getElementById('jsonPreview').textContent =
+    JSON.stringify(buildPayload(), null, 2);
+}
+
+// ── SEND ──────────────────────────────────────────────────────────────────────
+
+async function sendToThingSpeak() {
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  const payload = buildPayload();
+  payload.ts = Math.floor(Date.now() / 1000);
+  updateJSON();
+
+  // Rankinis — patikrinti ar yra kas pasikeitė
+  if (overrideMode && payload.villages.length === 0) {
+    showToast('Nieko nepasikeitė — nėra ką siųsti', 'info');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    return;
+  }
+
+  nodeStatus = new Array(15).fill('pending');
+  renderBadges();
+  setHeader('pending', 'Siunčiama…');
+
+  try {
+    const res  = await fetch('https://api.thingspeak.com/update.json', {
+      method: 'POST',
+      body: new URLSearchParams({ api_key: WRITE_KEY, field1: JSON.stringify(payload) })
+    });
+    const data = await res.json();
+
+    if (data && data.entry_id > 0) {
+      showToast('✓ Išsiųsta sėkmingai', 'success');
+      setHeader('ok', 'OK');
+      document.getElementById('lastSync').textContent =
+        'Paskutinis siuntimas: ' + now();
+      // Išsaugome ką išsiuntėme
+      lastSentStates = [...states];
+    } else {
+      showToast('✗ ThingSpeak atmetė komandą', 'error');
+      nodeStatus = new Array(15).fill(null);
+      renderBadges();
+      setHeader('err', 'ERR');
+    }
+  } catch {
+    showToast('✗ Tinklo klaida', 'error');
+    nodeStatus = new Array(15).fill(null);
+    renderBadges();
+    setHeader('err', 'ERR');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+// ── FETCH STATUS (field2) ─────────────────────────────────────────────────────
+
+async function fetchStatus() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  try {
+    const url  = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/2/last.json?api_key=${READ_KEY}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    const raw = data.field2;
+    if (!raw) {
+      showToast('field2 tuščias — ESP32 dar nerašė', 'info');
+      return;
     }
 
-    function render() {
-        document.getElementById('vList').innerHTML = VILLAGES.map((n, i) => `
-            <div class="village-row">
-                <span>${i+1}. ${n}</span>
-                <input type="checkbox" onchange="states[${i}]=this.checked">
-            </div>
-        `).join('');
-    }
+    const status = JSON.parse(raw);
+    let ok = 0, err = 0;
 
-    async function send() {
-        const stat = document.getElementById('stat');
-        stat.innerText = "SIUNČIAMA...";
-        const payload = {
-            m: mode,
-            o1: document.getElementById('on1').value, f1: document.getElementById('off1').value,
-            o2: document.getElementById('on2').value, f2: document.getElementById('off2').value,
-            as: parseInt(document.getElementById('as').value), ar: parseInt(document.getElementById('ar').value),
-            v: states.map((s, i) => ADDR[i] + (s ? '1' : '0')),
-            ov: document.getElementById('ovr').checked,
-            ts: Math.floor(Date.now() / 1000)
-        };
-        try {
-            const r = await fetch(`https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(JSON.stringify(payload))}`);
-            const d = await r.text();
-            stat.innerText = d > 0 ? "KOMANDA PRIIMTA (ID: " + d + ")" : "KLAIDA (PALAUKE 15S)";
-        } catch(e) { stat.innerText = "TINKLO KLAIDA"; }
+    ADDR.forEach((addr, i) => {
+      if      (status[addr] === 'OK')  { nodeStatus[i] = 'ok';  ok++; }
+      else if (status[addr] === 'ERR') { nodeStatus[i] = 'err'; err++; }
+      else                             { nodeStatus[i] = null; }
+    });
+
+    renderBadges();
+    showToast(`Statusas: ${ok} OK, ${err} klaida`, ok === 15 ? 'success' : 'info');
+    setHeader(err === 0 ? 'ok' : 'err', `${ok}/15`);
+
+    if (status.ts) {
+      document.getElementById('lastSync').textContent =
+        'ESP32 atsakė: ' + new Date(status.ts * 1000).toLocaleTimeString('lt-LT');
     }
-    render();
+  } catch {
+    showToast('✗ Nepavyko nuskaityti statuso', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+
+function setHeader(state, text) {
+  document.getElementById('statusDot').className = `status-dot ${state}`;
+  document.getElementById('statusText').textContent = text;
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+const now = () => new Date().toLocaleTimeString('lt-LT');
+
+// ── LOCAL STORAGE ────────────────────────────────────────────────────────────
+
+function saveSettings() {
+  const settings = {
+    mode:          astroMode ? 'astro' : 'fixed',
+    sunsetOffset:  document.getElementById('sunsetOffset').value,
+    sunriseOffset: document.getElementById('sunriseOffset').value,
+    p1en:  document.getElementById('p1en').checked,
+    on1:   document.getElementById('on1').value,
+    off1:  document.getElementById('off1').value,
+    p2en:  document.getElementById('p2en').checked,
+    on2:   document.getElementById('on2').value,
+    off2:  document.getElementById('off2').value,
+    states: states,
+    override: overrideMode,
+    astro: astroMode
+  };
+  localStorage.setItem('apsvietimas', JSON.stringify(settings));
+}
+
+function loadSettings() {
+  const raw = localStorage.getItem('apsvietimas');
+  if (!raw) return; // Pirmas paleidimas — stock nustatymai
+
+  try {
+    const s = JSON.parse(raw);
+    document.getElementById('p1en').checked = s.p1en  ?? true;
+    document.getElementById('on1').value    = s.on1   ?? '22:30';
+    document.getElementById('off1').value   = s.off1  ?? '06:00';
+    document.getElementById('p2en').checked = s.p2en  ?? false;
+    document.getElementById('on2').value    = s.on2   ?? '00:00';
+    document.getElementById('off2').value   = s.off2  ?? '02:00';
+    if (Array.isArray(s.states) && s.states.length === 15) states = s.states;
+    overrideMode = s.override ?? false;
+    astroMode    = s.astro    ?? false;
+    if (s.sunsetOffset)  document.getElementById('sunsetOffset').value  = s.sunsetOffset;
+    if (s.sunriseOffset) document.getElementById('sunriseOffset').value = s.sunriseOffset;
+  } catch { /* Sugadintas JSON — ignoruojame */ }
+}
+
+// Init
+loadSettings();
+buildVillages();
+setMode(astroMode ? "astro" : "fixed");
+setOverride(overrideMode);
+updateJSON();
 </script>
 </body>
 </html>
