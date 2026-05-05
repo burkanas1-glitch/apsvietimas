@@ -152,6 +152,24 @@
  
   .villages-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
  
+  .mode-bar {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+ 
+  .btn-mode {
+    flex: 1; padding: 9px 0; border-radius: 7px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; transition: all 0.15s;
+    background: var(--bg3); color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-mode:hover { background: var(--bg); color: var(--text); }
+  .btn-mode.active {
+    background: rgba(245,166,35,0.15); color: var(--accent);
+    border-color: rgba(245,166,35,0.4);
+    box-shadow: 0 0 8px rgba(245,166,35,0.2);
+  }
+ 
   .override-bar { display: flex; gap: 8px; margin-bottom: 10px; }
  
   .btn-override-on {
@@ -310,38 +328,83 @@
  
   <div class="section-title">Grafikas</div>
   <div class="card">
-    <div class="schedule-grid">
-      <div class="period-block">
-        <div class="period-toggle">
-          <span class="period-label">I periodas</span>
-          <label class="toggle">
-            <input type="checkbox" id="p1en" checked onchange="updateJSON(); saveSettings()">
-            <div class="toggle-track"></div><div class="toggle-thumb"></div>
-          </label>
+ 
+    <!-- Režimo pasirinkimas -->
+    <div class="mode-bar">
+      <button class="btn-mode active" id="btnModeFixed" onclick="setMode('fixed')">📅 Fiksuotas</button>
+      <button class="btn-mode"        id="btnModeAstro" onclick="setMode('astro')">🌅 Astronominis</button>
+    </div>
+ 
+    <!-- Fiksuotas grafikas -->
+    <div id="fixedPanel">
+      <div class="schedule-grid">
+        <div class="period-block">
+          <div class="period-toggle">
+            <span class="period-label">I periodas</span>
+            <label class="toggle">
+              <input type="checkbox" id="p1en" checked onchange="updateJSON(); saveSettings()">
+              <div class="toggle-track"></div><div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="time-row">
+            <label>ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON(); saveSettings()">
+          </div>
+          <div class="time-row">
+            <label>IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON(); saveSettings()">
+          </div>
         </div>
-        <div class="time-row">
-          <label>ĮJ</label><input type="time" id="on1" value="22:30" onchange="updateJSON(); saveSettings()">
-        </div>
-        <div class="time-row">
-          <label>IŠJ</label><input type="time" id="off1" value="06:00" onchange="updateJSON(); saveSettings()">
-        </div>
-      </div>
-      <div class="period-block">
-        <div class="period-toggle">
-          <span class="period-label">II periodas</span>
-          <label class="toggle">
-            <input type="checkbox" id="p2en" onchange="updateJSON(); saveSettings()">
-            <div class="toggle-track"></div><div class="toggle-thumb"></div>
-          </label>
-        </div>
-        <div class="time-row">
-          <label>ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON(); saveSettings()">
-        </div>
-        <div class="time-row">
-          <label>IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON(); saveSettings()">
+        <div class="period-block">
+          <div class="period-toggle">
+            <span class="period-label">II periodas</span>
+            <label class="toggle">
+              <input type="checkbox" id="p2en" onchange="updateJSON(); saveSettings()">
+              <div class="toggle-track"></div><div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="time-row">
+            <label>ĮJ</label><input type="time" id="on2" value="00:00" onchange="updateJSON(); saveSettings()">
+          </div>
+          <div class="time-row">
+            <label>IŠJ</label><input type="time" id="off2" value="02:00" onchange="updateJSON(); saveSettings()">
+          </div>
         </div>
       </div>
     </div>
+ 
+    <!-- Astronominis grafikas -->
+    <div id="astroPanel" style="display:none">
+      <div class="schedule-grid">
+        <div class="period-block">
+          <div class="period-label" style="margin-bottom:10px">🌇 Saulėlydis</div>
+          <div class="time-row">
+            <label style="width:60px;font-size:11px">Įj. po</label>
+            <input type="number" id="sunsetOffset" value="15" min="0" max="120"
+              onchange="updateJSON(); saveSettings()"
+              style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;
+                     color:var(--accent);font-family:var(--mono);font-size:16px;padding:6px 8px;
+                     outline:none;color-scheme:dark">
+            <label style="width:30px;font-size:11px;color:var(--muted)">min</label>
+          </div>
+        </div>
+        <div class="period-block">
+          <div class="period-label" style="margin-bottom:10px">🌅 Saulėtekis</div>
+          <div class="time-row">
+            <label style="width:60px;font-size:11px">Išj. prieš</label>
+            <input type="number" id="sunriseOffset" value="30" min="0" max="120"
+              onchange="updateJSON(); saveSettings()"
+              style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;
+                     color:var(--accent);font-family:var(--mono);font-size:16px;padding:6px 8px;
+                     outline:none;color-scheme:dark">
+            <label style="width:30px;font-size:11px;color:var(--muted)">min</label>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:var(--bg3);border-radius:6px;
+                  font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center">
+        📍 Žeimelis 56.13°N 23.87°E · ESP32 skaičiuoja pats
+      </div>
+    </div>
+ 
   </div>
  
   <div class="section-title">Kaimai</div>
@@ -397,6 +460,7 @@ const READ_KEY   = "NIPNDS28ZXRZFO9S";
  
 let states     = new Array(15).fill(true);
 let overrideMode = false;    // true = rankinis, false = grafiko
+let astroMode    = false;    // true = astronominis rezimas
 let lastSentStates = new Array(15).fill(null); // null = dar nesiųsta
 let nodeStatus = new Array(15).fill(null); // null|'pending'|'ok'|'err'
  
@@ -488,6 +552,18 @@ function renderBadges() {
   });
 }
  
+// ── MODE (fixed / astro) ─────────────────────────────────────────────────────
+ 
+function setMode(mode) {
+  astroMode = (mode === 'astro');
+  document.getElementById('btnModeFixed').classList.toggle('active', !astroMode);
+  document.getElementById('btnModeAstro').classList.toggle('active',  astroMode);
+  document.getElementById('fixedPanel').style.display = astroMode ? 'none'  : 'block';
+  document.getElementById('astroPanel').style.display = astroMode ? 'block' : 'none';
+  updateJSON();
+  saveSettings();
+}
+ 
 // ── OVERRIDE ─────────────────────────────────────────────────────────────────
  
 function setOverride(val) {
@@ -503,6 +579,24 @@ function setOverride(val) {
 function buildPayload() {
   const p1 = document.getElementById('p1en').checked;
   const p2 = document.getElementById('p2en').checked;
+ 
+  // Schedule object
+  let schedule;
+  if (astroMode) {
+    schedule = {
+      mode: 'astro',
+      sunset_offset:  parseInt(document.getElementById('sunsetOffset').value)  || 15,
+      sunrise_offset: parseInt(document.getElementById('sunriseOffset').value) || 30,
+    };
+  } else {
+    schedule = {
+      mode: 'schedule',
+      on1:  p1 ? document.getElementById('on1').value  : null,
+      off1: p1 ? document.getElementById('off1').value : null,
+      on2:  p2 ? document.getElementById('on2').value  : null,
+      off2: p2 ? document.getElementById('off2').value : null,
+    };
+  }
  
   let villages;
   if (overrideMode) {
@@ -520,12 +614,7 @@ function buildPayload() {
   }
  
   return {
-    schedule: {
-      on1:  p1 ? document.getElementById('on1').value  : null,
-      off1: p1 ? document.getElementById('off1').value : null,
-      on2:  p2 ? document.getElementById('on2').value  : null,
-      off2: p2 ? document.getElementById('off2').value : null,
-    },
+    schedule,
     villages,
     override: overrideMode,
     ts: Math.floor(Date.now() / 1000)
@@ -656,6 +745,9 @@ const now = () => new Date().toLocaleTimeString('lt-LT');
  
 function saveSettings() {
   const settings = {
+    mode:          astroMode ? 'astro' : 'fixed',
+    sunsetOffset:  document.getElementById('sunsetOffset').value,
+    sunriseOffset: document.getElementById('sunriseOffset').value,
     p1en:  document.getElementById('p1en').checked,
     on1:   document.getElementById('on1').value,
     off1:  document.getElementById('off1').value,
@@ -663,7 +755,8 @@ function saveSettings() {
     on2:   document.getElementById('on2').value,
     off2:  document.getElementById('off2').value,
     states: states,
-    override: overrideMode
+    override: overrideMode,
+    astro: astroMode
   };
   localStorage.setItem('apsvietimas', JSON.stringify(settings));
 }
@@ -682,12 +775,16 @@ function loadSettings() {
     document.getElementById('off2').value   = s.off2  ?? '02:00';
     if (Array.isArray(s.states) && s.states.length === 15) states = s.states;
     overrideMode = s.override ?? false;
+    astroMode    = s.astro    ?? false;
+    if (s.sunsetOffset)  document.getElementById('sunsetOffset').value  = s.sunsetOffset;
+    if (s.sunriseOffset) document.getElementById('sunriseOffset').value = s.sunriseOffset;
   } catch { /* Sugadintas JSON — ignoruojame */ }
 }
  
 // Init
 loadSettings();
 buildVillages();
+setMode(astroMode ? "astro" : "fixed");
 setOverride(overrideMode);
 updateJSON();
 </script>
