@@ -33,8 +33,8 @@
         <div class="param-row"><span>II Periodas:</span> <div><input type="time" id="on2" value="00:00"> <input type="time" id="off2" value="02:00"></div></div>
     </div>
     <div id="p-astro" style="display:none">
-        <div class="param-row"><span>Saulėlydžio poslinkis:</span> <input type="number" id="as" value="15"></div>
-        <div class="param-row"><span>Saulėtekio poslinkis:</span> <input type="number" id="ar" value="30"></div>
+        <div class="param-row"><span>Saulėlydžio poslinkis (min):</span> <input type="number" id="as" value="15"></div>
+        <div class="param-row"><span>Saulėtekio poslinkis (min):</span> <input type="number" id="ar" value="30"></div>
     </div>
 </div>
 
@@ -87,8 +87,8 @@
         try {
             const r = await fetch(`https://api.thingspeak.com/update?api_key=JFE3B81LD0HKM1FX&field1=${encodeURIComponent(JSON.stringify(payload))}`);
             const d = await r.text();
-            stat.innerText = d > 0 ? "SĖKMINGAI PRIIMTA. ID: " + d : "KLAIDA (PALAUKE 15S)";
-        } catch(e) { stat.innerText = "RYŠIO KLAIDA"; }
+            stat.innerText = d > 0 ? "KOMANDA PRIIMTA (ID: " + d + ")" : "KLAIDA (PALAUKE 15S)";
+        } catch(e) { stat.innerText = "TINKLO KLAIDA"; }
     }
     render();
 </script>
